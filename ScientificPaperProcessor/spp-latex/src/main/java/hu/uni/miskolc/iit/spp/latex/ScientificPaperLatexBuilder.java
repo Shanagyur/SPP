@@ -73,8 +73,10 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		String executeSystem = "cmd /c ";
 		String executeProcess = "pdflatex ";
 		String rootDirCommand = "-synctex=1 -interaction=nonstopmode -include-directory=\"";
+		/*
 		String documentRoot = ;
 		String fullCommand;
+		*/
 		return null;
 	}
 
@@ -86,7 +88,6 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		} catch (ZipException e) {
 			e.printStackTrace();
 		}
-		//return new File(zipFile.getParent());
 	}
 
 	@Override
