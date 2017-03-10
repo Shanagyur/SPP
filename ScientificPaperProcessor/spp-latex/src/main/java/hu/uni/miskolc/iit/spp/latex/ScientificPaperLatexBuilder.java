@@ -31,8 +31,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	@Override
 	protected void checkFileExtension(File paper) throws NotSupportedFileExtensionException {
-		unzip(paper);
-		File dir = new File(paper.getParent());
+		File dir = new File(unzip(paper));
 		File[] listOfFiles = dir.listFiles();
 		for(File file : listOfFiles) {
 			if(extensionTest(file, possibleFileExtension)) {
@@ -40,6 +39,65 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 			}
 		}
 		throw new NotSupportedFileExtensionException();
+	}
+	
+	private String unzip(File zipFile) throws NotSupportedFileExtensionException {
+		String destinationDir = null;
+		
+		try {
+			ZipFile validZipFile = new ZipFile(checkArchiveExtension(zipFile));
+			destinationDir = setTargetDir(zipFile);
+			validZipFile.extractAll(destinationDir);
+		} catch (ZipException e) {
+			e.printStackTrace();
+		}
+		return destinationDir;
+	}
+	
+	private File checkArchiveExtension(File zipFile) throws NotSupportedFileExtensionException {
+		if(extensionTest(zipFile, possibleArchiveExtension)) {
+			return zipFile;
+		} else {
+			throw new NotSupportedFileExtensionException();
+		}
+	}
+	
+	private String setTargetDir(File file) {
+		if(targetDirIsExist(file)) {
+			return createNewSubDir(file);
+		}
+		return createTargetDir(file);
+	}
+	
+	private boolean targetDirIsExist(File file) {
+		File targetDir = new File(file.getParent() + "\\targetDir");
+		if(targetDir.exists()) {
+			return true;
+		}
+		return false;
+	}
+	
+	private String createNewSubDir(File file) {
+		File targetDir = new File(file.getParent() + "\\targetDir");
+		String[] SubDirs = targetDir.list();
+		String newSubDir = targetDir.getPath() + "\\version_" + SubDirs.length;
+		new File(newSubDir).mkdir();
+		return newSubDir;
+	}
+	
+	private String createTargetDir(File file) {
+		String targetDirWithFirstSubDir = file.getParent() + "\\targetDir\\version_0";
+		new File(targetDirWithFirstSubDir).mkdir();
+		return targetDirWithFirstSubDir;
+	}
+	
+	private boolean extensionTest(File file, Collection<String> possibleExtension) {
+		String fileName = file.getName();
+		String[] fileNameParts = fileName.split("\\.");
+		if(possibleExtension.contains(fileNameParts[fileNameParts.length-1])) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -79,36 +137,6 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		return null;
 	}
 
-	private void unzip(File zipFile) throws NotSupportedFileExtensionException {
-		try {
-			ZipFile validZipFile = new ZipFile(checkArchiveExtension(zipFile));
-			
-			//törölni a targetDir -t vagy verziószámozni
-			File destinationDir = createTargetDir(zipFile);
-			//
-			validZipFile.extractAll(zipFile.getParent());
-		} catch (ZipException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private File checkArchiveExtension(File zipFile) throws NotSupportedFileExtensionException {
-		if(extensionTest(zipFile, possibleArchiveExtension)) {
-			return zipFile;
-		} else {
-			throw new NotSupportedFileExtensionException();
-		}
-	}
-	
-	private boolean extensionTest(File file, Collection<String> possibleExtension) {
-		String fileName = file.getName();
-		String[] fileNameParts = fileName.split("\\.");
-		if(possibleExtension.contains(fileNameParts[fileNameParts.length-1])) {
-			return true;
-		}
-		return false;
-	}
-	
 	private String selectMainFile(File dir) throws NoMainDocumentFoundException {
 		File[] listOfFiles = dir.listFiles();
 		for(File list : listOfFiles) {
@@ -118,18 +146,4 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		}
 		throw new NoMainDocumentFoundException();
 	}
-	
-	
-	
-	private String createTargetDir(File file) {
-		//asd rename
-		boolean asd = new File(file.getParent() + "\\targetDir").mkdir();
-		String targetDir = file.getParent() + "\\targetDir";
-		if(asd) {
-			return targetDir;
-		} else {
-			
-		}
-	}
-	
 }
