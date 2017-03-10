@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.List;
 
 import hu.uni.miskolc.iit.spp.core.model.Author;
-import hu.uni.miskolc.iit.spp.core.model.NotSupportedFileExtensionException;
 import hu.uni.miskolc.iit.spp.core.model.ScientificPaper;
+import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
 
 public abstract class AbstractScientificPaperBuilder implements ScientificPaperBuilder {
 

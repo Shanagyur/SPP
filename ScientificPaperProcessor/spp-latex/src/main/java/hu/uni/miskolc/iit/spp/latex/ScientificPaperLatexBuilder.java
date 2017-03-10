@@ -6,15 +6,14 @@ import java.util.HashSet;
 import java.util.List;
 
 import hu.uni.miskolc.iit.spp.core.model.Author;
-import hu.uni.miskolc.iit.spp.core.model.NoMainDocumentFoundException;
-import hu.uni.miskolc.iit.spp.core.model.NotSupportedFileExtensionException;
+import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
+import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
 import hu.uni.miskolc.iit.spp.core.service.AbstractScientificPaperBuilder;
-import hu.uni.miskolc.iit.spp.core.service.FileUnzip;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 
-public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder implements FileUnzip {
+public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder {
 
 	private Collection<String> possibleFileExtension;
 	private Collection<String> possibleArchiveExtension;
@@ -80,18 +79,20 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		return null;
 	}
 
-	@Override
-	public void unzip(File zipFile) throws NotSupportedFileExtensionException {
+	private void unzip(File zipFile) throws NotSupportedFileExtensionException {
 		try {
 			ZipFile validZipFile = new ZipFile(checkArchiveExtension(zipFile));
+			
+			//törölni a targetDir -t vagy verziószámozni
+			File destinationDir = createTargetDir(zipFile);
+			//
 			validZipFile.extractAll(zipFile.getParent());
 		} catch (ZipException e) {
 			e.printStackTrace();
 		}
 	}
 
-	@Override
-	public File checkArchiveExtension(File zipFile) throws NotSupportedFileExtensionException {
+	private File checkArchiveExtension(File zipFile) throws NotSupportedFileExtensionException {
 		if(extensionTest(zipFile, possibleArchiveExtension)) {
 			return zipFile;
 		} else {
@@ -117,4 +118,18 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		}
 		throw new NoMainDocumentFoundException();
 	}
+	
+	
+	
+	private String createTargetDir(File file) {
+		//asd rename
+		boolean asd = new File(file.getParent() + "\\targetDir").mkdir();
+		String targetDir = file.getParent() + "\\targetDir";
+		if(asd) {
+			return targetDir;
+		} else {
+			
+		}
+	}
+	
 }

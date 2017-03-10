@@ -1,4 +1,4 @@
-package hu.uni.miskolc.iit.spp.core.model;
+package hu.uni.miskolc.iit.spp.core.model.exception;
 
 public class NotSupportedFileExtensionException extends Exception {
 
