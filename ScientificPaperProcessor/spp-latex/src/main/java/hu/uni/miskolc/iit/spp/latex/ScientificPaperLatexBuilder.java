@@ -1,6 +1,8 @@
 package hu.uni.miskolc.iit.spp.latex;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +20,10 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private Collection<String> possibleFileExtension;
 	private Collection<String> possibleArchiveExtension;
 	private Collection<String> possibleMainFiles;
-	 
+	
+	private String actualTargetDirSubDirPath;
+	private String actualGeneratedDirSubDirPath;
+
 	{
 		possibleFileExtension = new HashSet<>();
 		possibleFileExtension.add(".tex");
@@ -28,10 +33,11 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		possibleMainFiles.add("main.tex");
 		possibleMainFiles.add("paper.tex");
 	}
-	
+
 	@Override
 	protected void checkFileExtension(File paper) throws NotSupportedFileExtensionException {
-		File dir = new File(unzip(paper));
+		unzip(paper);
+		File dir = new File(getActualTargetDirSubDirPath());
 		File[] listOfFiles = dir.listFiles();
 		for(File file : listOfFiles) {
 			if(extensionTest(file, possibleFileExtension)) {
@@ -41,17 +47,15 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		throw new NotSupportedFileExtensionException();
 	}
 	
-	private String unzip(File zipFile) throws NotSupportedFileExtensionException {
-		String destinationDir = null;
-		
+	private void unzip(File zipFile) throws NotSupportedFileExtensionException {
 		try {
 			ZipFile validZipFile = new ZipFile(checkArchiveExtension(zipFile));
-			destinationDir = setTargetDir(zipFile);
+			String destinationDir = setTargetDir(zipFile);
 			validZipFile.extractAll(destinationDir);
+			setActualTargetDirSubDirPath(destinationDir);
 		} catch (ZipException e) {
 			e.printStackTrace();
 		}
-		return destinationDir;
 	}
 	
 	private File checkArchiveExtension(File zipFile) throws NotSupportedFileExtensionException {
@@ -127,14 +131,29 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	@Override
 	protected File generatePDF(File paper) {
 		//impl
-		String executeSystem = "cmd /c ";
-		String executeProcess = "pdflatex ";
-		String rootDirCommand = "-synctex=1 -interaction=nonstopmode -include-directory=\"";
-		/*
-		String documentRoot = ;
-		String fullCommand;
-		*/
+		Process process = Runtime.getRuntime().exec(command(paper));
+		BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		
+		String s;
+		while((s = stdInput.readLine()) != null)
 		return null;
+	}
+	
+	private String command(File file) {
+		String latex = callLatexExecuter();
+		String includeDirParameter = "-include-directory=\"";
+		String rootDir = "";
+		String outputDirParameter = "\" -output-directory=\"";
+		String targetDir = "";
+		String mainFile = selectMainFile(file);
+		String fullCommand = latex + includeDirParameter + rootDir + outputDirParameter + targetDir + mainFile;
+		
+		return fullCommand;
+	}
+	
+	private String callLatexExecuter() {
+		String latexExecuter = "pdflatex" + " ";
+		return latexExecuter;
 	}
 
 	private String selectMainFile(File dir) throws NoMainDocumentFoundException {
@@ -145,5 +164,22 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 			}
 		}
 		throw new NoMainDocumentFoundException();
+	}
+	
+	//getters & setters
+	private String getActualTargetDirSubDirPath() {
+		return actualTargetDirSubDirPath;
+	}
+
+	private void setActualTargetDirSubDirPath(String actualTargetDirSubDirPath) {
+		this.actualTargetDirSubDirPath = actualTargetDirSubDirPath;
+	}
+
+	private String getActualGeneratedDirSubDirPath() {
+		return actualGeneratedDirSubDirPath;
+	}
+
+	private void setActualGeneratedDirSubDirPath(String actualGeneratedDirSubDirPath) {
+		this.actualGeneratedDirSubDirPath = actualGeneratedDirSubDirPath;
 	}
 }
