@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import hu.uni.miskolc.iit.spp.core.model.Author;
+import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
 import hu.uni.miskolc.iit.spp.core.service.AbstractScientificPaperBuilder;
@@ -129,7 +130,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	}
 
 	@Override
-	protected File generatePDF(File paper) {
+	protected File generatePDF(File paper) throws ConversionToPDFException {
 		//impl
 		Process process = Runtime.getRuntime().exec(command(paper));
 		BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -139,7 +140,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		return null;
 	}
 	
-	private String command(File file) {
+	private String command(File file) throws ConversionToPDFException {
 		String latex = callLatexExecuter();
 		String includeDirParameter = "-include-directory=\"";
 		String rootDir = getActualTargetDirSubDirPath();

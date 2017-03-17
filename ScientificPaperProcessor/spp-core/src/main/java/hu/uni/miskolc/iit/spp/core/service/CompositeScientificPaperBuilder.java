@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 
 import hu.uni.miskolc.iit.spp.core.model.ScientificPaper;
+import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
 
 public class CompositeScientificPaperBuilder implements ScientificPaperBuilder {
@@ -16,7 +17,7 @@ public class CompositeScientificPaperBuilder implements ScientificPaperBuilder {
 	}
 
 	@Override
-	public ScientificPaper build(String sourceFilePath) throws NotSupportedFileExtensionException {
+	public ScientificPaper build(String sourceFilePath) throws NotSupportedFileExtensionException, ConversionToPDFException {
 		for(ScientificPaperBuilder builder : builders) {
 			try {
 				ScientificPaper paper = builder.build(sourceFilePath);
@@ -29,7 +30,7 @@ public class CompositeScientificPaperBuilder implements ScientificPaperBuilder {
 	}
 
 	@Override
-	public ScientificPaper build(File paper) throws NotSupportedFileExtensionException {
+	public ScientificPaper build(File paper) throws NotSupportedFileExtensionException, ConversionToPDFException {
 		for(ScientificPaperBuilder builder : builders) {
 			try {
 				ScientificPaper result = builder.build(paper);

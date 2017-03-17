@@ -5,15 +5,16 @@ import java.util.List;
 
 import hu.uni.miskolc.iit.spp.core.model.Author;
 import hu.uni.miskolc.iit.spp.core.model.ScientificPaper;
+import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
 
 public abstract class AbstractScientificPaperBuilder implements ScientificPaperBuilder {
 
-	public final ScientificPaper build(String sourceFilePath) throws NotSupportedFileExtensionException {
+	public final ScientificPaper build(String sourceFilePath) throws NotSupportedFileExtensionException, ConversionToPDFException {
 		return build(new File(sourceFilePath));
 	}
 	
-	public final ScientificPaper build(File paper) throws NotSupportedFileExtensionException {
+	public final ScientificPaper build(File paper) throws NotSupportedFileExtensionException, ConversionToPDFException {
 		checkFileExtension(paper);
 		String title = extractTitle(paper);
 		String paperAbstract = extractAbstarct(paper);
@@ -28,5 +29,5 @@ public abstract class AbstractScientificPaperBuilder implements ScientificPaperB
 	protected abstract String extractAbstarct(File paper);
 	protected abstract List<String> extractKeywords(File paper);
 	protected abstract List<Author> extractAuthors(File paper);
-	protected abstract File generatePDF(File paper);
+	protected abstract File generatePDF(File paper) throws ConversionToPDFException;
 }
