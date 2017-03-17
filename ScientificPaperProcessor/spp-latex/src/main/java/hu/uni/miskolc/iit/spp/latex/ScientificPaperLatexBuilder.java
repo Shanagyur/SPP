@@ -68,7 +68,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	private String setTargetDir(File file) {
 		if(targetDirIsExist(file)) {
-			return createNewSubDir(file);
+			return createNewSubDirForTargetDir(file);
 		}
 		return createTargetDir(file);
 	}
@@ -81,10 +81,10 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		return false;
 	}
 	
-	private String createNewSubDir(File file) {
+	private String createNewSubDirForTargetDir(File file) {
 		File targetDir = new File(file.getParent() + "\\targetDir");
-		String[] SubDirs = targetDir.list();
-		String newSubDir = targetDir.getPath() + "\\version_" + SubDirs.length;
+		String[] subDirs = targetDir.list();
+		String newSubDir = targetDir.getPath() + "\\version_" + subDirs.length;
 		new File(newSubDir).mkdir();
 		return newSubDir;
 	}
@@ -142,11 +142,12 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private String command(File file) {
 		String latex = callLatexExecuter();
 		String includeDirParameter = "-include-directory=\"";
-		String rootDir = "";
+		String rootDir = getActualTargetDirSubDirPath();
 		String outputDirParameter = "\" -output-directory=\"";
-		String targetDir = "";
+		setGeneratedDir(file);
+		String outputDir = getActualGeneratedDirSubDirPath();
 		String mainFile = selectMainFile(file);
-		String fullCommand = latex + includeDirParameter + rootDir + outputDirParameter + targetDir + mainFile;
+		String fullCommand = latex + includeDirParameter + rootDir + outputDirParameter + outputDir + mainFile;
 		
 		return fullCommand;
 	}
@@ -155,7 +156,36 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		String latexExecuter = "pdflatex" + " ";
 		return latexExecuter;
 	}
-
+	
+	private void setGeneratedDir(File file) {
+		if(generatedDirIsExists(file)) {
+			createNewSubDirForGeneratedDir(file);
+		}
+		createGeneratedDir(file);
+	}
+	
+	private boolean generatedDirIsExists(File file) {
+		File generatedDir = new File(file.getParent() + "\\generatedDir");
+		if(generatedDir.exists()) {
+			return true;
+		}
+		return false;
+	}
+	
+	private void createNewSubDirForGeneratedDir(File file) {
+		File generatedDir = new File(file.getParent() + "\\generatedDir");
+		String[] subDirs = generatedDir.list();
+		String newSubDir = generatedDir.getPath() + "\\version_" + subDirs.length;
+		new File(newSubDir).mkdir();
+		setActualGeneratedDirSubDirPath(newSubDir);
+	}
+	
+	private void createGeneratedDir(File file) {
+		String generatedDirWithFirstSubDir = file.getParent() + "\\generatedDir" + "\\version_0";
+		new File(generatedDirWithFirstSubDir).mkdir();
+		setActualGeneratedDirSubDirPath(generatedDirWithFirstSubDir);
+	}
+	
 	private String selectMainFile(File dir) throws NoMainDocumentFoundException {
 		File[] listOfFiles = dir.listFiles();
 		for(File list : listOfFiles) {
