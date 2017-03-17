@@ -2,6 +2,7 @@ package hu.uni.miskolc.iit.spp.latex;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private Collection<String> possibleFileExtension;
 	private Collection<String> possibleArchiveExtension;
 	private Collection<String> possibleMainFiles;
+	private Collection<String> possibleGeneratedFileExtension;
 	
 	private String actualTargetDirSubDirPath;
 	private String actualGeneratedDirSubDirPath;
@@ -33,6 +35,8 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		possibleMainFiles = new HashSet<>();
 		possibleMainFiles.add("main.tex");
 		possibleMainFiles.add("paper.tex");
+		possibleGeneratedFileExtension = new HashSet<>();
+		possibleGeneratedFileExtension.add(".pdf");
 	}
 
 	@Override
@@ -95,15 +99,6 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		new File(targetDirWithFirstSubDir).mkdir();
 		return targetDirWithFirstSubDir;
 	}
-	
-	private boolean extensionTest(File file, Collection<String> possibleExtension) {
-		String fileName = file.getName();
-		String[] fileNameParts = fileName.split("\\.");
-		if(possibleExtension.contains(fileNameParts[fileNameParts.length-1])) {
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	protected String extractTitle(File paper) {
@@ -131,16 +126,27 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 
 	@Override
 	protected File generatePDF(File paper) throws ConversionToPDFException {
-		//impl
-		Process process = Runtime.getRuntime().exec(command(paper));
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		try {
+			Process process = Runtime.getRuntime().exec(command(paper));
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		
-		String s;
-		while((s = stdInput.readLine()) != null)
-		return null;
+			String s;
+			while((s = stdInput.readLine()) != null)
+			
+			return returnPDFDoc();
+		}
+		catch (NoMainDocumentFoundException e) {
+			e.printStackTrace();
+			throw new ConversionToPDFException();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			throw new ConversionToPDFException();
+		}
+		throw new ConversionToPDFException();
 	}
 	
-	private String command(File file) throws ConversionToPDFException {
+	private String command(File file) throws NoMainDocumentFoundException {
 		String latex = callLatexExecuter();
 		String includeDirParameter = "-include-directory=\"";
 		String rootDir = getActualTargetDirSubDirPath();
@@ -195,6 +201,27 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 			}
 		}
 		throw new NoMainDocumentFoundException();
+	}
+	
+	private File returnPDFDoc() throws NoMainDocumentFoundException {
+		File rootDir = new File(getActualGeneratedDirSubDirPath());
+		File[] listOfFiles = rootDir.listFiles();
+		for(File file : listOfFiles) {
+			if(extensionTest(file, possibleGeneratedFileExtension)) {
+				return file;
+			}
+		}
+		throw new NoMainDocumentFoundException();
+	}
+	
+	//methods with more occurrence
+	private boolean extensionTest(File file, Collection<String> possibleExtension) {
+		String fileName = file.getName();
+		String[] fileNameParts = fileName.split("\\.");
+		if(possibleExtension.contains(fileNameParts[fileNameParts.length-1])) {
+			return true;
+		}
+		return false;
 	}
 	
 	//getters & setters
