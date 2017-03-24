@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
@@ -41,9 +42,7 @@ public class UnzipMethodTests {
 		Assert.assertTrue("create targetDir and version_0 subdir", 
 				(testTargetDir.exists() && testTargetDirSubDir.exists()));
 	}
-	
-//-----------------------------------------------------------------------------------------------	
-///*	
+
 	@After
 	public void clear() {
 		File targetDir = new File("src\\resources\\targetDir");
@@ -57,7 +56,7 @@ public class UnzipMethodTests {
 			removeDirectory(generatedDir);
 		}
 	}
-//*/	
+
 	private void removeDirectory(File dir) {
 		if(dir.isDirectory()) {
 			File[] files = dir.listFiles();
