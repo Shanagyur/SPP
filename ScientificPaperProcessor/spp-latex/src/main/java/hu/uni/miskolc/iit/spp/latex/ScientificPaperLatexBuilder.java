@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.SynchronousQueue;
 
 import hu.uni.miskolc.iit.spp.core.model.Author;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
@@ -59,6 +60,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	private void unzip(File zipFile) throws NotSupportedFileExtensionException {
 		try {
+//			System.out.println(zipFile.getPath() + " (in unzip method)");
 			ZipFile validZipFile = new ZipFile(checkArchiveExtension(zipFile));
 			String destinationDir = setTargetDir(zipFile);
 			validZipFile.extractAll(destinationDir);
@@ -71,6 +73,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private File checkArchiveExtension(File zipFile) throws NotSupportedFileExtensionException {
 		if(extensionTest(zipFile, possibleArchiveExtension)) {
 //			System.out.println("checkArchiveExtension true line");
+//			System.out.println(zipFile.exists());
 			return zipFile;
 		} else {
 //			System.out.println("checkArchiveExtension false line");
@@ -104,6 +107,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private String createTargetDir(File file) {
 		String targetDirWithFirstSubDir = file.getParent() + "\\targetDir\\version_0";
 		new File(targetDirWithFirstSubDir).mkdir();
+//		System.out.println("targetDir created");
 		return targetDirWithFirstSubDir;
 	}
 //-----------------------------------------------------------------------------------------------
@@ -160,9 +164,10 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		String outputDirParameter = "\" -output-directory=\"";
 		setGeneratedDir(file);
 		String outputDir = getActualGeneratedDirSubDirPath();
-		String mainFile = selectMainFile(file);
-		String fullCommand = latex + includeDirParameter + rootDir + outputDirParameter + outputDir + mainFile;
+		String mainFile = selectMainFile(new File(rootDir));
+		String fullCommand = latex + includeDirParameter + rootDir + outputDirParameter + outputDir + "\" " + mainFile;
 		
+		System.out.println(fullCommand);
 		return fullCommand;
 	}
 	
@@ -198,6 +203,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		String generatedDirWithFirstSubDir = file.getParent() + "\\generatedDir" + "\\version_0";
 		new File(generatedDirWithFirstSubDir).mkdir();
 		setActualGeneratedDirSubDirPath(generatedDirWithFirstSubDir);
+//		System.out.println(getActualGeneratedDirSubDirPath());
 	}
 	
 	private String selectMainFile(File dir) throws NoMainDocumentFoundException {

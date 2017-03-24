@@ -1,13 +1,11 @@
 package hu.uni.miskolc.iit.spp.latex.ScientificPaperLatexBuilderTests.CheckFileExtensionMethodTests;
 
-
-
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
@@ -26,19 +24,18 @@ public class UnzipMethodTests {
 	@Test(expected = NotSupportedFileExtensionException.class)
 	public void checkArchiveExtensionTest() throws NotSupportedFileExtensionException, ConversionToPDFException {
 
-		String testRarPath = "\\resources\\dummyTexInRar.rar";
+		String testRarPath = "src\\resources\\dummyTexInRar.rar";
 		testElement.build(testRarPath);
 	}
 	
 	//setTargetDir method tests
 	@Test
-	@Ignore("cant't use yet")
 	public void createTargetDirTest() throws NotSupportedFileExtensionException, ConversionToPDFException {
 		
-		String testZipPath = "\\resources\\dummyTexInZip.zip";
+		String testZipPath = "src\\resources\\dummyTexInZip.zip";
 		testElement.build(testZipPath);
 		
-		File testTargetDir = new File("\\resources\\targetDir");
+		File testTargetDir = new File("src\\resources\\targetDir");
 		File testTargetDirSubDir = new File(testTargetDir.getPath() + "\\version_0");
 		
 		Assert.assertTrue("create targetDir and version_0 subdir", 
@@ -46,6 +43,34 @@ public class UnzipMethodTests {
 	}
 	
 //-----------------------------------------------------------------------------------------------	
+///*	
+	@After
+	public void clear() {
+		File targetDir = new File("src\\resources\\targetDir");
+		if(targetDir.exists()) {
+			System.out.println("targetDir existed & deleted");
+			removeDirectory(targetDir);
+		}
+		File generatedDir = new File("src\\resources\\generatedDir");
+		if(generatedDir.exists()) {
+			System.out.println("generatedDir existed & deleted");
+			removeDirectory(generatedDir);
+		}
+	}
+//*/	
+	private void removeDirectory(File dir) {
+		if(dir.isDirectory()) {
+			File[] files = dir.listFiles();
+			if(files != null && files.length > 0) {
+				for (File aFile : files) {
+					removeDirectory(aFile);
+				}
+	        }
+	        dir.delete();
+	    } else {
+	        dir.delete();
+	    }
+	}
 	
 	private ScientificPaperBuilder createTestElement() {
 		Collection<AbstractScientificPaperBuilder> testCollection;
