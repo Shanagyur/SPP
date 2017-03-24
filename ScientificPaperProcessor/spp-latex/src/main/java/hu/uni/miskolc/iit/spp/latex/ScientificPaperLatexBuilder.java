@@ -29,15 +29,20 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 
 	{
 		possibleFileExtension = new HashSet<>();
-		possibleFileExtension.add(".tex");
+		possibleFileExtension.add("tex");
 		possibleArchiveExtension = new HashSet<>();
-		possibleArchiveExtension.add(".zip");
+		possibleArchiveExtension.add("zip");
 		possibleMainFiles = new HashSet<>();
 		possibleMainFiles.add("main.tex");
 		possibleMainFiles.add("paper.tex");
 		possibleGeneratedFileExtension = new HashSet<>();
-		possibleGeneratedFileExtension.add(".pdf");
+		possibleGeneratedFileExtension.add("pdf");
 	}
+	
+	
+	public ScientificPaperLatexBuilder() {
+	}
+	
 
 	@Override
 	protected void checkFileExtension(File paper) throws NotSupportedFileExtensionException {
@@ -65,8 +70,10 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	private File checkArchiveExtension(File zipFile) throws NotSupportedFileExtensionException {
 		if(extensionTest(zipFile, possibleArchiveExtension)) {
+//			System.out.println("checkArchiveExtension true line");
 			return zipFile;
 		} else {
+//			System.out.println("checkArchiveExtension false line");
 			throw new NotSupportedFileExtensionException();
 		}
 	}
@@ -99,7 +106,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		new File(targetDirWithFirstSubDir).mkdir();
 		return targetDirWithFirstSubDir;
 	}
-
+//-----------------------------------------------------------------------------------------------
 	@Override
 	protected String extractTitle(File paper) {
 		//impl
