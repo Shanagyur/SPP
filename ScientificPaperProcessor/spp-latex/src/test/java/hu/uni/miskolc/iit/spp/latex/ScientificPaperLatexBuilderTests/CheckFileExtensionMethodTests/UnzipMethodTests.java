@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
@@ -21,7 +20,7 @@ public class UnzipMethodTests {
 	
 	private ScientificPaperBuilder testElement = createTestElement();
 	
-	//checkArchiveExtension method test
+	//
 	@Test(expected = NotSupportedFileExtensionException.class)
 	public void checkArchiveExtensionTest() throws NotSupportedFileExtensionException, ConversionToPDFException {
 
@@ -29,7 +28,7 @@ public class UnzipMethodTests {
 		testElement.build(testRarPath);
 	}
 	
-	//setTargetDir method tests
+	//
 	@Test
 	public void createTargetDirTest() throws NotSupportedFileExtensionException, ConversionToPDFException {
 		

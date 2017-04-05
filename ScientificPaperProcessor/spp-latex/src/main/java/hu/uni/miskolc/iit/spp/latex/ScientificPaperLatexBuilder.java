@@ -23,7 +23,6 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private Collection<String> possibleArchiveExtension;
 	private Collection<String> possibleMainFiles;
 	private Collection<String> possibleGeneratedFileExtension;
-	
 	private String actualTargetDirSubDirPath;
 	private String actualGeneratedDirSubDirPath;
 
@@ -39,16 +38,13 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		possibleGeneratedFileExtension.add("pdf");
 	}
 	
-	
 	public ScientificPaperLatexBuilder() {
 	}
-	
 
 	@Override
 	protected void checkFileExtension(File paper) throws NotSupportedFileExtensionException {
 		unzip(paper);
-		File dir = new File(getActualTargetDirSubDirPath());
-		File[] listOfFiles = dir.listFiles();
+		File[] listOfFiles = new File(getActualTargetDirSubDirPath()).listFiles();
 		for(File file : listOfFiles) {
 			if(extensionTest(file, possibleFileExtension)) {
 				return;
@@ -59,52 +55,55 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	private void unzip(File zipFile) throws NotSupportedFileExtensionException {
 		try {
-			ZipFile validZipFile = new ZipFile(checkArchiveExtension(zipFile));
-			String destinationDir = setTargetDir(zipFile);
-			validZipFile.extractAll(destinationDir);
-			setActualTargetDirSubDirPath(destinationDir);
+			boolean isValidZipFile = checkArchiveExtension(zipFile);
+			if(isValidZipFile) {
+				ZipFile validZipFile = new ZipFile(zipFile);
+				String destinationDir = setTargetDir(zipFile);
+				validZipFile.extractAll(destinationDir);
+			} else {
+				throw new NotSupportedFileExtensionException();
+			}
 		} catch (ZipException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	private File checkArchiveExtension(File zipFile) throws NotSupportedFileExtensionException {
-		if(extensionTest(zipFile, possibleArchiveExtension)) {
-			return zipFile;
-		} else {
 			throw new NotSupportedFileExtensionException();
 		}
 	}
 	
+	private boolean checkArchiveExtension(File zipFile) {
+		return extensionTest(zipFile, possibleArchiveExtension);
+	}
+	
 	private String setTargetDir(File file) {
-		if(targetDirIsExist(file)) {
-			return createNewSubDirForTargetDir(file);
+		if(getActualTargetDirSubDirPath() == null) {
+			createTargetDir(file);
+			return getActualTargetDirSubDirPath();
+		} else {
+			createNewSubDirForTargetDir();
+			return getActualTargetDirSubDirPath();
 		}
-		return createTargetDir(file);
 	}
 	
-	private boolean targetDirIsExist(File file) {
-		File targetDir = new File(file.getParent() + "\\targetDir");
-		if(targetDir.exists()) {
-			return true;
+	private void createTargetDir(File file) {
+		File targetDir = new File(file.getParentFile().getAbsolutePath() + "\\targetDir");
+		targetDir.mkdir();
+		setActualTargetDirSubDirPath(targetDir.getAbsolutePath());
+		createNewSubDirForTargetDir();
+	}
+	
+	private void createNewSubDirForTargetDir() {
+		File file = new File(getActualTargetDirSubDirPath()).getParentFile();
+		if(file.getName() != "targetDir") {
+			File firstSubDir = new File(getActualTargetDirSubDirPath() + "\\version_0");
+			firstSubDir.mkdir();
+			setActualTargetDirSubDirPath(firstSubDir.getAbsolutePath());
+		} else {
+			File[] targetDirFolders = file.listFiles();
+			File newSubDir = new File(file.getAbsoluteFile() + "\\version_" + targetDirFolders.length);
+			newSubDir.mkdir();
+			setActualTargetDirSubDirPath(newSubDir.getAbsolutePath());
 		}
-		return false;
 	}
 	
-	private String createNewSubDirForTargetDir(File file) {
-		File targetDir = new File(file.getParent() + "\\targetDir");
-		String[] subDirs = targetDir.list();
-		String newSubDir = targetDir.getPath() + "\\version_" + subDirs.length;
-		new File(newSubDir).mkdir();
-		return newSubDir;
-	}
-	
-	private String createTargetDir(File file) {
-		String targetDirWithFirstSubDir = file.getParent() + "\\targetDir\\version_0";
-		new File(targetDirWithFirstSubDir).mkdir();
-		return targetDirWithFirstSubDir;
-	}
-
 	@Override
 	protected String extractTitle(File paper) {
 		//impl
@@ -156,8 +155,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		String includeDirParameter = "-include-directory=\"";
 		String rootDir = new File(getActualTargetDirSubDirPath()).getAbsolutePath();
 		String outputDirParameter = "\" -output-directory=\"";
-		setGeneratedDir(file);
-		String outputDir = new File(getActualGeneratedDirSubDirPath()).getAbsolutePath();
+		String outputDir = setGeneratedDir(file);
 		String mainFile = selectMainFile(new File(rootDir));
 		String fullCommand = latex + includeDirParameter + rootDir + outputDirParameter + outputDir + "\" " + mainFile;
 		
@@ -169,34 +167,35 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		return latexExecuter;
 	}
 	
-	private void setGeneratedDir(File file) {
-		if(generatedDirIsExists(file)) {
-			createNewSubDirForGeneratedDir(file);
+	private String setGeneratedDir(File file) {
+		if(getActualGeneratedDirSubDirPath() == null) {
+			createGeneratedDir(file);
+			return getActualGeneratedDirSubDirPath();
+		} else {
+			createNewSubDirForGeneratedDir();
+			return getActualGeneratedDirSubDirPath();
 		}
-		createGeneratedDir(file);
-	}
-	
-	private boolean generatedDirIsExists(File file) {
-		File generatedDir = new File(file.getParent() + "\\generatedDir");
-		if(generatedDir.exists()) {
-			return true;
-		}
-		return false;
-	}
-	
-	private void createNewSubDirForGeneratedDir(File file) {
-		File generatedDir = new File(file.getParent() + "\\generatedDir");
-		String[] subDirs = generatedDir.list();
-		String newSubDir = generatedDir.getPath() + "\\version_" + subDirs.length;
-		new File(newSubDir).mkdir();
-		setActualGeneratedDirSubDirPath(newSubDir);
 	}
 	
 	private void createGeneratedDir(File file) {
-		String generatedDirWithFirstSubDir = file.getParent() + "\\generatedDir" + "\\version_0";
-		File generatedDir = new File(generatedDirWithFirstSubDir);
-		boolean isSuccess = generatedDir.mkdirs();
-		setActualGeneratedDirSubDirPath(generatedDirWithFirstSubDir);
+		File generatedDir = new File(file.getParentFile().getAbsolutePath() + "\\generatedDir");
+		generatedDir.mkdir();
+		setActualGeneratedDirSubDirPath(generatedDir.getAbsolutePath());
+		createNewSubDirForGeneratedDir();
+	}
+	
+	private void createNewSubDirForGeneratedDir() {
+		File file = new File(getActualGeneratedDirSubDirPath()).getParentFile();
+		if(file.getName() != "generatedDir") {
+			File firstSubDir = new File(getActualGeneratedDirSubDirPath() + "\\version_0");
+			firstSubDir.mkdir();
+			setActualGeneratedDirSubDirPath(firstSubDir.getAbsolutePath());
+		} else {
+			File[] generatedDirFolders = file.listFiles();
+			File newSubDir = new File(file.getAbsoluteFile() + "\\version_" + generatedDirFolders.length);
+			newSubDir.mkdir();
+			setActualGeneratedDirSubDirPath(newSubDir.getAbsolutePath());
+		}
 	}
 	
 	private String selectMainFile(File dir) throws NoMainDocumentFoundException {
