@@ -23,9 +23,11 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private Collection<String> possibleArchiveExtension;
 	private Collection<String> possibleMainFiles;
 	private Collection<String> possibleGeneratedFileExtension;
+	private String targetDirPath;
 	private String actualTargetDirSubDirPath;
+	private String generatedDirPath;
 	private String actualGeneratedDirSubDirPath;
-
+	
 	{
 		possibleFileExtension = new HashSet<>();
 		possibleFileExtension.add("tex");
@@ -46,7 +48,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		unzip(paper);
 		File[] listOfFiles = new File(getActualTargetDirSubDirPath()).listFiles();
 		for(File file : listOfFiles) {
-			if(extensionTest(file, possibleFileExtension)) {
+			if(checkUnzipFilesExtension(file)) {
 				return;
 			}
 		}
@@ -74,34 +76,40 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	}
 	
 	private String setTargetDir(File file) {
-		if(getActualTargetDirSubDirPath() == null) {
-			createTargetDir(file);
-			return getActualTargetDirSubDirPath();
-		} else {
+		if(targetDirIsExist(file)) {
 			createNewSubDirForTargetDir();
 			return getActualTargetDirSubDirPath();
+		} else {
+			createTargetDir(file);
+			return getActualTargetDirSubDirPath();
+		}
+	}
+	
+	private boolean targetDirIsExist(File file) {
+		File targetDir = new File(file.getParentFile().getAbsolutePath() + "\\targetDir");
+		if(targetDir.exists()) {
+			setTargetDirPath(targetDir.getAbsolutePath());
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
 	private void createTargetDir(File file) {
 		File targetDir = new File(file.getParentFile().getAbsolutePath() + "\\targetDir");
 		targetDir.mkdir();
-		setActualTargetDirSubDirPath(targetDir.getAbsolutePath());
+		setTargetDirPath(targetDir.getAbsolutePath());
 		createNewSubDirForTargetDir();
 	}
 	
 	private void createNewSubDirForTargetDir() {
-		File file = new File(getActualTargetDirSubDirPath()).getParentFile();
-		if(file.getName() != "targetDir") {
-			File firstSubDir = new File(getActualTargetDirSubDirPath() + "\\version_0");
-			firstSubDir.mkdir();
-			setActualTargetDirSubDirPath(firstSubDir.getAbsolutePath());
-		} else {
-			File[] targetDirFolders = file.listFiles();
-			File newSubDir = new File(file.getAbsoluteFile() + "\\version_" + targetDirFolders.length);
+			File newSubDir = new File(getTargetDirPath() + "\\version_" + new File(getTargetDirPath()).listFiles().length);
 			newSubDir.mkdir();
 			setActualTargetDirSubDirPath(newSubDir.getAbsolutePath());
-		}
+	}
+	
+	private boolean checkUnzipFilesExtension(File file) {
+		return extensionTest(file, possibleFileExtension);
 	}
 	
 	@Override
@@ -228,14 +236,32 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		}
 		return false;
 	}
+
+
 	
 	//getters & setters
+	private String getTargetDirPath() {
+		return targetDirPath;
+	}
+
+	private void setTargetDirPath(String targetDirPath) {
+		this.targetDirPath = targetDirPath;
+	}
+
 	private String getActualTargetDirSubDirPath() {
 		return actualTargetDirSubDirPath;
 	}
 
 	private void setActualTargetDirSubDirPath(String actualTargetDirSubDirPath) {
 		this.actualTargetDirSubDirPath = actualTargetDirSubDirPath;
+	}
+
+	private String getGeneratedDirPath() {
+		return generatedDirPath;
+	}
+
+	private void setGeneratedDirPath(String generatedDirPath) {
+		this.generatedDirPath = generatedDirPath;
 	}
 
 	private String getActualGeneratedDirSubDirPath() {
