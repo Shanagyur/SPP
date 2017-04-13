@@ -25,33 +25,34 @@ public class ScientificPaperLatexBuilderTest {
 	// create targetDir with version_0 subdir
 	@Test
 	public void testCheckFileExtension_UnzipMethodSetTargetDirMethod() throws NotSupportedFileExtensionException {
-		try {
-			File testZip = new File("src\\resources\\dummyTexInZip.zip");
-			testElement.checkFileExtension(testZip);
+		File testZip = new File("src\\resources\\dummyTexInZip.zip");
+		testElement.checkFileExtension(testZip);
 			
-			File targetDir = new File("src\\resources\\targetDir");
-			File version_0Dir = new File("src\\resources\\targetDir\\version_0");
+		File targetDir = new File("src\\resources\\targetDir");
+		File version_0Dir = new File("src\\resources\\targetDir\\version_0");
 			
-			assertTrue(targetDir.exists() && version_0Dir.exists());
-			
-		} catch(NotSupportedFileExtensionException e) {}
+		assertTrue(targetDir.exists() && version_0Dir.exists());
 	}
 	
 	// create targetDir with version_0 & version_1 subdir
 	@Test
 	public void testCheckFileExtension_UnzipMethodSetTargetDirMethodMoreTimes() throws NotSupportedFileExtensionException {
-		try {
-			File testZip = new File("src\\resources\\dummyTexInZip.zip");
-			for(int i = 0; i < 2; i++) {
-				testElement.checkFileExtension(testZip);
-			}
+		File testZip = new File("src\\resources\\dummyTexInZip.zip");
+		for(int i = 0; i < 2; i++) {
+			testElement.checkFileExtension(testZip);
+		}
 			
-			File targetDir = new File("src\\resources\\targetDir");
-			File version_1Dir = new File("src\\resources\\targetDir\\version_1");
+		File targetDir = new File("src\\resources\\targetDir");
+		File version_1Dir = new File("src\\resources\\targetDir\\version_1");
 			
-			assertTrue(targetDir.exists() && version_1Dir.exists());
-			
-		} catch (NotSupportedFileExtensionException e) {}
+		assertTrue(targetDir.exists() && version_1Dir.exists());
+	}
+	
+	// can extract but don't exist .tex file
+	@Test(expected = NotSupportedFileExtensionException.class)
+	public void testCheckFileExtension_checkUnzipFilesExtensionMethod() throws NotSupportedFileExtensionException {
+		File testZip = new File("src\\resources\\dummyTxtInZip.zip");
+		testElement.checkFileExtension(testZip);
 	}
 
 	@Ignore("Not yet implemented")
