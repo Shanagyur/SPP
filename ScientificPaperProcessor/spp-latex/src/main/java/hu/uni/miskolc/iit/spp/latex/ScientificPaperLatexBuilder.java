@@ -61,9 +61,9 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		}
 		try {
 			ZipFile validZipFile = new ZipFile(zipFile);
-			setVersionDirWithTexFile(createDestinationDirectory(zipFile, "targetDir"));
-			validZipFile.extractAll(getVersionDirWithTexFile().getAbsolutePath());
-			return getVersionDirWithTexFile();
+			this.versionDirWithTexFile = createDestinationDirectory(zipFile, "targetDir");
+			validZipFile.extractAll(this.versionDirWithTexFile.getAbsolutePath());
+			return this.versionDirWithTexFile;
 		} catch (ZipException e) {
 			throw new IOException();
 		}
@@ -112,10 +112,10 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private String command(File paper) throws NoMainDocumentFoundException, IOException {
 		String latex = getLatexCompiler() + " ";
 		String includeDirParameter = "-include-directory=\"";
-		File rootDir = getVersionDirWithTexFile();
+		File rootDir = this.versionDirWithTexFile;
 		String outputDirParameter = "\" -output-directory=\"";
 		File outputDir = createDestinationDirectory(paper, "generatedDir");
-		setVersionDirWithPdfFile(outputDir);
+		this.versionDirWithPdfFile = outputDir;
 		File mainFile = selectMainFile();
 		
 		String fullCommand = latex + includeDirParameter + rootDir.getAbsolutePath() + outputDirParameter + outputDir.getAbsolutePath() + "\" " + mainFile.getName();
@@ -123,23 +123,23 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	}
 	
 	private File selectMainFile() throws NoMainDocumentFoundException {
-		File[] listOfFiles = getVersionDirWithTexFile().listFiles();
+		File[] listOfFiles = this.versionDirWithTexFile.listFiles();
 		for (File file : listOfFiles) {
 			if (possibleMainFiles.contains(file.getName())) {
 				return file;
 			}
 		}
-		throw new NoMainDocumentFoundException("Could not find correct .tex file (correct files: " + possibleMainFiles.toString() + " ) in directory: " + getVersionDirWithTexFile().getAbsolutePath());
+		throw new NoMainDocumentFoundException("Could not find correct .tex file (correct files: " + possibleMainFiles.toString() + " ) in directory: " + this.versionDirWithPdfFile.getAbsolutePath());
 	}
 	
 	private File returnPDFDoc() throws NoMainDocumentFoundException {
-		File[] listOfFiles = getVersionDirWithPdfFile().listFiles();
+		File[] listOfFiles = this.versionDirWithPdfFile.listFiles();
 		for (File file : listOfFiles) {
 			if (extensionTest(file, possibleGeneratedFileExtension)) {
 				return file;
 			}
 		}
-		throw new NoMainDocumentFoundException("Could not find .pdf file in: " + getVersionDirWithPdfFile().getAbsolutePath());
+		throw new NoMainDocumentFoundException("Could not find .pdf file in: " + this.versionDirWithPdfFile.getAbsolutePath());
 	}
 
 	// methods with more occurrence
@@ -177,21 +177,5 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 
 	private void setLatexCompiler(String latexCompiler) {
 		this.latexCompiler = latexCompiler;
-	}
-	
-	private File getVersionDirWithTexFile() {
-		return versionDirWithTexFile;
-	}
-
-	private void setVersionDirWithTexFile(File versionDirWithTexFile) {
-		this.versionDirWithTexFile = versionDirWithTexFile;
-	}
-
-	private File getVersionDirWithPdfFile() {
-		return versionDirWithPdfFile;
-	}
-
-	private void setVersionDirWithPdfFile(File versionDirWithPdfFile) {
-		this.versionDirWithPdfFile = versionDirWithPdfFile;
 	}
 }
