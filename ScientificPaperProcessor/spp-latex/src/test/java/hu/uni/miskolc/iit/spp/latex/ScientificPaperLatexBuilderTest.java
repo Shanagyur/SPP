@@ -3,20 +3,23 @@ package hu.uni.miskolc.iit.spp.latex;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
 
 public class ScientificPaperLatexBuilderTest {
 
-	private ScientificPaperLatexBuilder testElement = createTestElement();
+	private ScientificPaperLatexBuilder testElement;
 	
 	// try to extract a rar file
 	@Test(expected = NotSupportedFileExtensionException.class)
-	public void testCheckFileExtension_UnzipMethodWithRarFile() throws NotSupportedFileExtensionException {
+	public void testCheckFileExtension_UnzipMethodWithRarFile() throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
 		
 		File testRar = new File("src\\resources\\dummyTxtInRar.rar");
 		testElement.checkFileExtension(testRar);
@@ -24,7 +27,7 @@ public class ScientificPaperLatexBuilderTest {
 	
 	// create targetDir with version_0 subdir
 	@Test
-	public void testCheckFileExtension_UnzipMethodSetTargetDirMethod() throws NotSupportedFileExtensionException {
+	public void testCheckFileExtension_UnzipMethodSetTargetDirMethod() throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
 		File testZip = new File("src\\resources\\dummyTexInZip.zip");
 		testElement.checkFileExtension(testZip);
 			
@@ -36,7 +39,7 @@ public class ScientificPaperLatexBuilderTest {
 	
 	// create targetDir with version_0 & version_1 subdir
 	@Test
-	public void testCheckFileExtension_UnzipMethodSetTargetDirMethodMoreTimes() throws NotSupportedFileExtensionException {
+	public void testCheckFileExtension_UnzipMethodSetTargetDirMethodMoreTimes() throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
 		File testZip = new File("src\\resources\\dummyTexInZip.zip");
 		for(int i = 0; i < 2; i++) {
 			testElement.checkFileExtension(testZip);
@@ -50,7 +53,7 @@ public class ScientificPaperLatexBuilderTest {
 	
 	// can extract but don't exist .tex file
 	@Test(expected = NotSupportedFileExtensionException.class)
-	public void testCheckFileExtension_checkUnzipFilesExtensionMethod() throws NotSupportedFileExtensionException {
+	public void testCheckFileExtension_checkUnzipFilesExtensionMethod() throws NotSupportedFileExtensionException, IOException {
 		File testZip = new File("src\\resources\\dummyTxtInZip.zip");
 		testElement.checkFileExtension(testZip);
 	}
@@ -86,7 +89,7 @@ public class ScientificPaperLatexBuilderTest {
 	}
 	
 	@After
-	public void clear() {
+	public void tearDown() {
 		File targetDir = new File("src\\resources\\targetDir");
 		if(targetDir.exists()) {
 			System.out.println("targetDir existed & deleted");
@@ -113,7 +116,10 @@ public class ScientificPaperLatexBuilderTest {
 	    }
 	}
 	
-	private ScientificPaperLatexBuilder createTestElement() {
-		return new ScientificPaperLatexBuilder();
+	@Before
+	public void setUp() {
+		this.testElement = new ScientificPaperLatexBuilder("pdflatex"
+//				,""
+				);
 	}
 }

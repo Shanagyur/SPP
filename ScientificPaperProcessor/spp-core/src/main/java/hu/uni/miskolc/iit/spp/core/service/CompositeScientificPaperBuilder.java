@@ -1,6 +1,7 @@
 package hu.uni.miskolc.iit.spp.core.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import hu.uni.miskolc.iit.spp.core.model.ScientificPaper;
@@ -17,7 +18,7 @@ public class CompositeScientificPaperBuilder implements ScientificPaperBuilder {
 	}
 
 	@Override
-	public ScientificPaper build(String sourceFilePath) throws NotSupportedFileExtensionException, ConversionToPDFException {
+	public ScientificPaper build(String sourceFilePath) throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
 		for(ScientificPaperBuilder builder : builders) {
 			try {
 				ScientificPaper paper = builder.build(sourceFilePath);
@@ -30,7 +31,7 @@ public class CompositeScientificPaperBuilder implements ScientificPaperBuilder {
 	}
 
 	@Override
-	public ScientificPaper build(File paper) throws NotSupportedFileExtensionException, ConversionToPDFException {
+	public ScientificPaper build(File paper) throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
 		for(ScientificPaperBuilder builder : builders) {
 			try {
 				ScientificPaper result = builder.build(paper);
