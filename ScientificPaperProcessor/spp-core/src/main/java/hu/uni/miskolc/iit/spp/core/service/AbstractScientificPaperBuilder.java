@@ -25,7 +25,7 @@ public abstract class AbstractScientificPaperBuilder implements ScientificPaperB
 		return new ScientificPaper(title, paperAbstract, keywords, authors, paperPDF);
 	}
 
-	protected abstract void checkFileExtension(File paper) throws NotSupportedFileExtensionException, ConversionToPDFException, IOException;
+	protected abstract void checkFileExtension(File paper) throws NotSupportedFileExtensionException, IOException;
 	protected abstract String extractTitle(File paper);
 	protected abstract String extractAbstarct(File paper);
 	protected abstract List<String> extractKeywords(File paper);

@@ -52,12 +52,12 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 				return;
 			}
 		}
-		throw new NotSupportedFileExtensionException();
+		throw new NotSupportedFileExtensionException("Could not find .tex file in: " + zipContentDir.getAbsolutePath());
 	}
 
 	private File unzip(File zipFile) throws NotSupportedFileExtensionException, IOException {
 		if (extensionTest(zipFile, possibleArchiveExtension) == false) {
-			throw new NotSupportedFileExtensionException();
+			throw new NotSupportedFileExtensionException("Could not extract files because not .zip file: " + zipFile.getAbsolutePath());
 		}
 		try {
 			ZipFile validZipFile = new ZipFile(zipFile);
@@ -95,14 +95,18 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	@Override
 	protected File generatePDF(File paper) throws ConversionToPDFException, IOException {
-		Process process = Runtime.getRuntime().exec(command(paper));
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		try {
+			Process process = Runtime.getRuntime().exec(command(paper));
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-		String s;
-		while ((s = stdInput.readLine()) != null) {
+			String s;
+			while ((s = stdInput.readLine()) != null) {
+			}
+
+			return returnPDFDoc();
+		} catch (NoMainDocumentFoundException e) {
+			throw new ConversionToPDFException(e.getMessage());
 		}
-
-		return returnPDFDoc();
 	}
 	
 	private String command(File paper) throws NoMainDocumentFoundException, IOException {
@@ -125,18 +129,17 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 				return file;
 			}
 		}
-		throw new NoMainDocumentFoundException();
+		throw new NoMainDocumentFoundException("Could not find correct .tex file (correct files: " + possibleMainFiles.toString() + " ) in directory: " + getVersionDirWithTexFile().getAbsolutePath());
 	}
 	
 	private File returnPDFDoc() throws NoMainDocumentFoundException {
-		File rootDir = getVersionDirWithPdfFile();
-		File[] listOfFiles = rootDir.listFiles();
+		File[] listOfFiles = getVersionDirWithPdfFile().listFiles();
 		for (File file : listOfFiles) {
 			if (extensionTest(file, possibleGeneratedFileExtension)) {
 				return file;
 			}
 		}
-		throw new NoMainDocumentFoundException();
+		throw new NoMainDocumentFoundException("Could not find .pdf file in: " + getVersionDirWithPdfFile().getAbsolutePath());
 	}
 
 	// methods with more occurrence
@@ -151,7 +154,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	private File createDestinationDirectory(File file, String directoryName) throws IOException {
 		File directory = new File(file.getParentFile().getAbsolutePath() + "\\" + directoryName);
-		if(directory.exists() == false){
+		if(directory.exists() == false) {
 			if(!directory.mkdir()){
 				throw new IOException("Could not create directory: " + directory.getAbsolutePath());
 			};
@@ -161,7 +164,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 			versionNo++;
 		}
 		File destinationDir = new File(directory.getAbsolutePath() + "\\version_" + versionNo);
-		if(destinationDir.mkdir() == false){
+		if(destinationDir.mkdir() == false) {
 			throw new IOException("Could not create directory: " + destinationDir.getAbsolutePath());
 		}
 		return destinationDir;
