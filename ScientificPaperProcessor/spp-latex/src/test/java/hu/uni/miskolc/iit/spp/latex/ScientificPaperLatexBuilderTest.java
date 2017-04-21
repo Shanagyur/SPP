@@ -19,7 +19,7 @@ public class ScientificPaperLatexBuilderTest {
 	
 	// try to extract a rar file
 	@Test(expected = NotSupportedFileExtensionException.class)
-	public void testCheckFileExtension_UnzipMethodWithRarFile() throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
+	public void testCheckFileExtension_unzipMethodWithRarFile() throws NotSupportedFileExtensionException, IOException {
 		
 		File testRar = new File("src\\resources\\dummyTxtInRar.rar");
 		testElement.checkFileExtension(testRar);
@@ -27,7 +27,7 @@ public class ScientificPaperLatexBuilderTest {
 	
 	// create targetDir with version_0 subdir
 	@Test
-	public void testCheckFileExtension_UnzipMethodSetTargetDirMethod() throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
+	public void testCheckFileExtension_unzipMethodCreateDestinationDirectoryMethod() throws NotSupportedFileExtensionException, IOException {
 		File testZip = new File("src\\resources\\dummyTexInZip.zip");
 		testElement.checkFileExtension(testZip);
 			
@@ -39,7 +39,7 @@ public class ScientificPaperLatexBuilderTest {
 	
 	// create targetDir with version_0 & version_1 subdir
 	@Test
-	public void testCheckFileExtension_UnzipMethodSetTargetDirMethodMoreTimes() throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
+	public void testCheckFileExtension_unzipMethodCreateDestinationDirectoryMethodMoreTimes() throws NotSupportedFileExtensionException, IOException {
 		File testZip = new File("src\\resources\\dummyTexInZip.zip");
 		for(int i = 0; i < 2; i++) {
 			testElement.checkFileExtension(testZip);
@@ -53,7 +53,7 @@ public class ScientificPaperLatexBuilderTest {
 	
 	// can extract but don't exist .tex file
 	@Test(expected = NotSupportedFileExtensionException.class)
-	public void testCheckFileExtension_checkUnzipFilesExtensionMethod() throws NotSupportedFileExtensionException, IOException {
+	public void testCheckFileExtension_checkUnzipFilesExtension() throws NotSupportedFileExtensionException, IOException {
 		File testZip = new File("src\\resources\\dummyTxtInZip.zip");
 		testElement.checkFileExtension(testZip);
 	}
@@ -78,9 +78,40 @@ public class ScientificPaperLatexBuilderTest {
 	public void testExtractAuthors() {
 	}
 
-	@Ignore("Not yet implemented")
+	// create generatedDir with version_0 subdir
 	@Test
-	public void testGeneratePDF() {
+	public void testGeneratePDF_commandMethodCreateDestinationDirectoryMethod() throws NotSupportedFileExtensionException, IOException, ConversionToPDFException {
+		File testZip = new File("src\\resources\\dummyTexInZip.zip");
+		testElement.checkFileExtension(testZip);
+		testElement.generatePDF(testZip);
+		
+		File generatedDir = new File("src\\resources\\generatedDir");
+		File version_0Dir = new File("src\\resources\\generatedDir\\version_0");
+		
+		assertTrue(generatedDir.exists() && version_0Dir.exists());
+	}
+	
+	// create generatedDir with version_0 & version_1 subdir
+	@Test
+	public void testGeneratePDF_commandMethodCreateDestinationDirectoryMethodMoreTimes() throws NotSupportedFileExtensionException, IOException, ConversionToPDFException {
+		File testZip = new File("src\\resources\\dummyTexInZip.zip");
+		testElement.checkFileExtension(testZip);
+		for(int i = 0; i < 2; i++) {
+			testElement.generatePDF(testZip);
+		}
+		
+		File generatedDir = new File("src\\resources\\generatedDir");
+		File version_1Dir = new File("src\\resources\\generatedDir\\version_1");
+		
+		assertTrue(generatedDir.exists() && version_1Dir.exists());
+	}
+	
+	// good .tex file but not acceptable name
+	@Test(expected = ConversionToPDFException.class)
+	public void testGeneratePDF_commandMethodSelectMainFileMethod() throws NotSupportedFileExtensionException, IOException, ConversionToPDFException {
+		File testZip = new File("src\\resources\\dummyTexInZipWithBadName.zip");
+		testElement.checkFileExtension(testZip);
+		testElement.generatePDF(testZip);
 	}
 
 	@Ignore("Not yet implemented")
@@ -118,8 +149,6 @@ public class ScientificPaperLatexBuilderTest {
 	
 	@Before
 	public void setUp() {
-		this.testElement = new ScientificPaperLatexBuilder("pdflatex"
-//				,""
-				);
+		this.testElement = new ScientificPaperLatexBuilder("pdflatex");
 	}
 }
