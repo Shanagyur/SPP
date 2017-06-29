@@ -1,20 +1,61 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>hu.uni.miskolc.iit.spp</groupId>
-    <artifactId>scientific-paper-processor</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-  <groupId>hu.uni.miskolc.iit.spp</groupId>
-  <artifactId>spp-core</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>spp-core</name>
-  <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <dependencies>
-  </dependencies>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>hu.uni.miskolc.iit.spp</groupId>
+		<artifactId>scientific-paper-processor</artifactId>
+		<version>0.0.3-SNAPSHOT</version>
+	</parent>
+	
+	<groupId>hu.uni.miskolc.iit.spp</groupId>
+	<artifactId>spp-core</artifactId>
+	<version>0.0.3-SNAPSHOT</version>
+	<name>spp-core</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
+	<repositories>
+		<repository>
+			<id>safranek</id>
+			<name>Snapshots</name>
+			<url>http://safranek.iit.uni-miskolc.hu:8081/nexus/content/repositories/snapshots/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.1</version>
+					<executions>
+						<execution>
+							<id>default-deploy</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>deploy</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>safranek</id>
+			<url>http://safranek.iit.uni-miskolc.hu:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 </project>
