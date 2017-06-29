@@ -20,7 +20,6 @@ public class ScientificPaperLatexBuilderTest {
 	// try to extract a rar file
 	@Test(expected = NotSupportedFileExtensionException.class)
 	public void testCheckFileExtension_unzipMethodWithRarFile() throws NotSupportedFileExtensionException, IOException {
-		
 		File testRar = new File("src\\resources\\dummyTxtInRar.rar");
 		testElement.checkFileExtension(testRar);
 	}

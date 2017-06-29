@@ -17,18 +17,18 @@ public abstract class AbstractScientificPaperBuilder implements ScientificPaperB
 	
 	public final ScientificPaper build(File paper) throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
 		checkFileExtension(paper);
+		File paperPDF = generatePDF(paper);
 		String title = extractTitle(paper);
 		String paperAbstract = extractAbstarct(paper);
 		List<String> keywords = extractKeywords(paper);
 		List<Author> authors = extractAuthors(paper);
-		File paperPDF = generatePDF(paper);
 		return new ScientificPaper(title, paperAbstract, keywords, authors, paperPDF);
 	}
 
 	protected abstract void checkFileExtension(File paper) throws NotSupportedFileExtensionException, IOException;
+	protected abstract File generatePDF(File paper) throws ConversionToPDFException, IOException;
 	protected abstract String extractTitle(File paper);
 	protected abstract String extractAbstarct(File paper);
 	protected abstract List<String> extractKeywords(File paper);
 	protected abstract List<Author> extractAuthors(File paper);
-	protected abstract File generatePDF(File paper) throws ConversionToPDFException, IOException;
 }

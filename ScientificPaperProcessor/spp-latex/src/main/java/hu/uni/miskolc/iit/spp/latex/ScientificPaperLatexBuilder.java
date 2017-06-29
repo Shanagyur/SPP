@@ -2,11 +2,16 @@ package hu.uni.miskolc.iit.spp.latex;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
 
 import hu.uni.miskolc.iit.spp.core.model.Author;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
@@ -25,6 +30,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private String latexCompiler;
 	private File versionDirWithTexFile;
 	private File versionDirWithPdfFile;
+	private ArrayList<String> mainFileContent;
 
 	static {
 		possibleFileExtension = new HashSet<>();
@@ -48,7 +54,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		File zipContentDir = unzip(paper);
 		File[] listOfFiles = zipContentDir.listFiles();
 		for(File file : listOfFiles) {
-			if(extensionTest(file, possibleFileExtension)) {
+			if(extensionTest(file, possibleFileExtension) == true) {
 				return;
 			}
 		}
@@ -56,7 +62,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	}
 
 	private File unzip(File zipFile) throws NotSupportedFileExtensionException, IOException {
-		if (extensionTest(zipFile, possibleArchiveExtension) == false) {
+		if(extensionTest(zipFile, possibleArchiveExtension) == false) {
 			throw new NotSupportedFileExtensionException("Could not extract files because not .zip file: " + zipFile.getAbsolutePath());
 		}
 		try {
@@ -67,30 +73,6 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		} catch (ZipException e) {
 			throw new IOException();
 		}
-	}
-
-	@Override
-	protected String extractTitle(File paper) {
-		// impl
-		return null;
-	}
-
-	@Override
-	protected String extractAbstarct(File paper) {
-		// impl
-		return null;
-	}
-
-	@Override
-	protected List<String> extractKeywords(File paper) {
-		// impl
-		return null;
-	}
-
-	@Override
-	protected List<Author> extractAuthors(File paper) {
-		// impl
-		return null;
 	}
 	
 	@Override
@@ -124,8 +106,8 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	private File selectMainFile() throws NoMainDocumentFoundException {
 		File[] listOfFiles = this.versionDirWithTexFile.listFiles();
-		for (File file : listOfFiles) {
-			if (possibleMainFiles.contains(file.getName())) {
+		for(File file : listOfFiles) {
+			if(possibleMainFiles.contains(file.getName())) {
 				return file;
 			}
 		}
@@ -134,19 +116,84 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	private File returnPDFDoc() throws NoMainDocumentFoundException {
 		File[] listOfFiles = this.versionDirWithPdfFile.listFiles();
-		for (File file : listOfFiles) {
-			if (extensionTest(file, possibleGeneratedFileExtension)) {
+		for(File file : listOfFiles) {
+			if(extensionTest(file, possibleGeneratedFileExtension) == true) {
 				return file;
 			}
 		}
 		throw new NoMainDocumentFoundException("Could not find .pdf file in: " + this.versionDirWithPdfFile.getAbsolutePath());
 	}
+	
+	@Override
+	protected String extractTitle(File paper) {
+		// impl
+		return null;
+	}
 
+	@Override
+	protected String extractAbstarct(File paper) {
+		// impl
+		return null;
+	}
+
+	@Override
+	protected List<String> extractKeywords(File paper) {
+		// impl
+		return null;
+	}
+
+	@Override
+	protected List<Author> extractAuthors(File paper) {
+		// impl
+		return null;
+	}
+	
+	private ArrayList<String> fillUpFromFile(File texFile) throws Exception {
+		BufferedReader br = new BufferedReader(new FileReader(texFile));
+		
+		ArrayList<String> allString = new ArrayList<>();
+		String currentLine;
+		
+		while((currentLine = br.readLine()) != null) {
+			if(containsInput(currentLine) == true) {
+				String texFileName = texFileName(currentLine);
+				allString.addAll(fillUpFromFile(searchFile(texFileName, versionDirWithTexFile)));
+			} else {
+				allString.add(currentLine);
+			}
+		}
+		return allString;
+	}
+	
+	private boolean containsInput(String string) {
+		return string.substring(string.indexOf("\\") + 1, string.indexOf("{")).equals("input") == true;
+	}
+	
+	private String texFileName(String string) {
+		String name = string.substring(string.indexOf("{") + 1, string.indexOf("}"));
+		return name;
+	}
+	
+	private File searchFile(String fileName, File directory) throws Exception {
+		File[] listOfFiles = directory.listFiles();
+		for(File file : listOfFiles) {
+			if(file.isDirectory() == true) {
+				return searchFile(fileName, file);
+			}
+			if(fileName.equals(FilenameUtils.removeExtension(file.getName())) == true) {
+				if(extensionTest(file, possibleFileExtension) == true) {
+					return file;
+				}
+			}
+		}
+		throw new Exception();
+	}
+	
 	// methods with more occurrence
 	private boolean extensionTest(File file, Collection<String> possibleExtension) {
 		String fileName = file.getName();
 		String[] fileNameParts = fileName.split("\\.");
-		if (possibleExtension.contains(fileNameParts[fileNameParts.length - 1])) {
+		if(possibleExtension.contains(fileNameParts[fileNameParts.length - 1])) {
 			return true;
 		}
 		return false;
@@ -155,9 +202,9 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private File createDestinationDirectory(File file, String directoryName) throws IOException {
 		File directory = new File(file.getParentFile().getAbsolutePath() + "\\" + directoryName);
 		if(directory.exists() == false) {
-			if(!directory.mkdir()){
+			if(!directory.mkdir()) {
 				throw new IOException("Could not create directory: " + directory.getAbsolutePath());
-			};
+			}
 		}
 		int versionNo = 0;
 		while( new File(directory.getAbsolutePath()+"\\version_" + versionNo).exists() == true) {
