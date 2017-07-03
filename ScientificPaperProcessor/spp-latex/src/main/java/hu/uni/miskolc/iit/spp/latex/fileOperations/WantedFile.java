@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 
-import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
 import hu.uni.miskolc.iit.spp.core.model.exception.WantedFileNotExistsException;
 
 public class WantedFile {
@@ -17,26 +16,26 @@ public class WantedFile {
 		this.possibleFileNames = possibleFileNames;
 	}
 	
-	public static WantedFile wantedFileClassMorePossibleFileNames(File directory, Collection<String> possibleFileNames) {
+	public static WantedFile createWantedFileClassOnePossibleFileName(File directory, String possibleFileName) {
+		Collection<String> possibleFileNames = new HashSet<>();
+		possibleFileNames.add(possibleFileName);
 		return new WantedFile(directory, possibleFileNames);
 	}
 	
-	public static WantedFile wantedFileClassOnePossibleFileName(File directory, String possibleFileName) {
-		Collection<String> possibleFileNames = new HashSet<>();
-		possibleFileNames.add(possibleFileName);
+	public static WantedFile createWantedFileClassMorePossibleFileNames(File directory, Collection<String> possibleFileNames) {
 		return new WantedFile(directory, possibleFileNames);
 	}
 	
 	public File getWantedFile() throws WantedFileNotExistsException {
 		File[] files = this.directory.listFiles();
 		for(File file : files) {
-			if(file.isDirectory() == false) {
+			if(file.isDirectory() == true) {
+				WantedFile dir = new WantedFile(file, this.possibleFileNames);
+				dir.getWantedFile();
+			} else {
 				if(this.possibleFileNames.contains(file.getName()) == true) {
 					return file;
 				}
-			} else {
-				WantedFile dir = new WantedFile(file, this.possibleFileNames);
-				dir.getWantedFile();
 			}
 		}
 		throw new WantedFileNotExistsException();
