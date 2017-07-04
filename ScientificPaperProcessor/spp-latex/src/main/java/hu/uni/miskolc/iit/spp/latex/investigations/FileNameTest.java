@@ -5,18 +5,24 @@ import java.util.Collection;
 
 import org.apache.commons.io.FilenameUtils;
 
+import hu.uni.miskolc.iit.spp.core.model.SupportedFileNames;
+
 public class FileNameTest {
 
 	private File file;
-	private Collection<String> possibleFileNames;
+	private static SupportedFileNames supportedFileNames;
 	
-	public FileNameTest(File file, Collection<String> possibleFileNames) {
+	public FileNameTest(File file) {
 		this.file = file;
-		this.possibleFileNames = possibleFileNames;
 	}
 	
 	public boolean eitherMatch() {
 		String fileName = FilenameUtils.getBaseName(this.file.toString());
-		return possibleFileNames.contains(fileName);
+		for(SupportedFileNames names : FileNameTest.supportedFileNames.values()) {
+			if(names.getStringValue() == fileName.toLowerCase()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
