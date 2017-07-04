@@ -1,7 +1,6 @@
 package hu.uni.miskolc.iit.spp.latex.investigations;
 
 import java.io.File;
-import java.util.Collection;
 
 import org.apache.commons.io.FilenameUtils;
 
