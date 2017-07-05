@@ -1,11 +1,11 @@
 package hu.uni.miskolc.iit.spp.core.model;
 
-public enum SupportedFileExtensions {
+public enum SupportedCompileableTextFileExtensions {
 	TEX("tex");
 	
 	private String stringValue;
 
-	private SupportedFileExtensions(String stringValue) {
+	private SupportedCompileableTextFileExtensions(String stringValue) {
 		this.stringValue = stringValue;
 	}
 
