@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import hu.uni.miskolc.iit.spp.core.model.SupportedArchiveExtensions;
+import hu.uni.miskolc.iit.spp.core.model.UsedDirectoryNames;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedArchiveExtensionException;
 import hu.uni.miskolc.iit.spp.latex.investigations.ExtensionTest;
 import net.lingala.zip4j.core.ZipFile;
@@ -12,7 +13,7 @@ import net.lingala.zip4j.exception.ZipException;
 public class Unpacking {
 
 	private static SupportedArchiveExtensions supportedArchiveExtensions;
-	private static final String DESTIONATION_DIR_NAME = "targetDir";
+	private static final String DESTIONATION_DIR_NAME = UsedDirectoryNames.DIR_FOR_EXTRACT_FILES.getStringValue();
 	
 	public Unpacking() {
 	}
