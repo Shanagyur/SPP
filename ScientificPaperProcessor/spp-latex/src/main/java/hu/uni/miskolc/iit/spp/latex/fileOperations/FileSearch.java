@@ -23,11 +23,28 @@ public class FileSearch {
 			} else {
 				FileNameTest testedFileName = new FileNameTest(file);
 				ExtensionTest testedExtension = new ExtensionTest(file);
-				if(testedFileName.eitherMatch() && testedExtension.fileExtensionSupported()) {
+				if(testedFileName.eitherMatch() && testedExtension.compileableTextFileExtensionSupported()) {
 					return file;
 				}
 			}
 		}
 		throw new SearchedFileNotExistsException("Could not find tex file with supported name in this directory: " + this.directory.getAbsolutePath());
+	}
+	
+	public File findPDFFile() throws SearchedFileNotExistsException {
+		File[] files = this.directory.listFiles();
+		for(File file : files) {
+			if(file.isDirectory() == true) {
+				FileSearch directory = new FileSearch(file);
+				directory.findPDFFile();
+			} else {
+				FileNameTest testedFileName = new FileNameTest(file);
+				ExtensionTest testedExtension = new ExtensionTest(file);
+				if(testedFileName.eitherMatch() && testedExtension.generatedFileExtensionSupported()) {
+					return file;
+				}
+			}
+		}
+		throw new SearchedFileNotExistsException("Could not find pdf file with supported name in this directory: " + this.directory.getAbsolutePath());
 	}
 }
