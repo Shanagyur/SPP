@@ -155,6 +155,6 @@ public class ScientificPaperLatexBuilderTest {
 	
 	@Before
 	public void setUp() {
-		this.testElement = new ScientificPaperLatexBuilder("pdflatex");
+		this.testElement = new ScientificPaperLatexBuilder();
 	}
 }
