@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
 import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
-import hu.uni.miskolc.iit.spp.latex.fileOperations.FileSearch;
+import hu.uni.miskolc.iit.spp.latex.operations.FileOperations;
 
 public abstract class Latex2PDFCompiler {
 
@@ -19,9 +19,7 @@ public abstract class Latex2PDFCompiler {
 	public File generatePDFFile(File sourceDir, File destinationDir) throws ConversionToPDFException {
 		try {
 			compile(sourceDir, destinationDir);
-			FileSearch file = new FileSearch(destinationDir);
-			File pdfFile = file.findPDFFile();
-			return pdfFile;
+			return FileOperations.findPDFFile(destinationDir);
 		} catch (SearchedFileNotExistsException e) {
 			throw new ConversionToPDFException(e.getMessage());
 		} catch (IOException e) {
