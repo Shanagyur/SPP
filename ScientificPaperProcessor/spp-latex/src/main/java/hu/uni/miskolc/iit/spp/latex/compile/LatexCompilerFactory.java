@@ -2,7 +2,7 @@ package hu.uni.miskolc.iit.spp.latex.compile;
 
 import hu.uni.miskolc.iit.spp.core.model.SupportedOperationSystems;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedOperationSystemException;
-import hu.uni.miskolc.iit.spp.latex.investigations.OperationSystemTest;
+import hu.uni.miskolc.iit.spp.latex.investigations.SubmissionChecker;
 
 public class LatexCompilerFactory {
 	
@@ -12,28 +12,26 @@ public class LatexCompilerFactory {
 	}
 
 	public Latex2PDFCompiler createLatexPDFCompiler() throws NotSupportedOperationSystemException {
-		if(isLinux()) {
-			return new LinuxLatexPDFCompiler();
-		}
-		if(isWindows()) {
-			return new WindowsLatexPDFCompiler();
+		if(SubmissionChecker.isSupportedOS()) {
+			if(isLinux()) {
+				return new LinuxLatexPDFCompiler();
+			}
+			if(isWindows()) {
+				return new WindowsLatexPDFCompiler();
+			}
 		}
 		throw new NotSupportedOperationSystemException("Could not create compiler, because this operation system is not supported.");
 	}
 
-	private boolean isLinux() throws NotSupportedOperationSystemException {
-		OperationSystemTest systemTest = new OperationSystemTest(System.getProperty(OS_NAME));
-		if(systemTest.whichMatch() == SupportedOperationSystems.LINUX.getStringValue()) {
-			return true;
-		}
-		return false;
+	private boolean isLinux() {
+		return isThisOS(SupportedOperationSystems.LINUX);
 	}
 	
-	private boolean isWindows() throws NotSupportedOperationSystemException {
-		OperationSystemTest systemTest = new OperationSystemTest(System.getProperty(OS_NAME));
-		if(systemTest.whichMatch() == SupportedOperationSystems.WINDOWS.getStringValue()) {
-			return true;
-		}
-		return false;
+	private boolean isWindows() {
+		return isThisOS(SupportedOperationSystems.WINDOWS);
+	}
+	
+	private boolean isThisOS(SupportedOperationSystems system) {
+		return System.getProperty(OS_NAME).toLowerCase().contains(system.getStringValue());
 	}
 }
