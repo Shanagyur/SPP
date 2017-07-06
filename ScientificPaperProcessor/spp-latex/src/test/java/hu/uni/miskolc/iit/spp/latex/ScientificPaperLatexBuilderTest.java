@@ -152,9 +152,10 @@ public class ScientificPaperLatexBuilderTest {
 	        dir.delete();
 	    }
 	}
-	
+/*	
 	@Before
 	public void setUp() {
 		this.testElement = new ScientificPaperLatexBuilder();
 	}
+*/
 }
