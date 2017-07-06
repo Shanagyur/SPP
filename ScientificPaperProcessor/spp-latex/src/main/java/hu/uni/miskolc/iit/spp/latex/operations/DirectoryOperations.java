@@ -6,6 +6,7 @@ import java.io.IOException;
 public class DirectoryOperations {
 
 	private static final String FILE_SEPARATOR = "file.separator";
+	private static final String SUBDIR_NAME = "version_";
 	
 	public DirectoryOperations() {
 	}
@@ -18,7 +19,7 @@ public class DirectoryOperations {
 			}
 		}
 		int versionNo = 0;
-		while(new File(directory.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + "version_" + versionNo).exists() == true) {
+		while(new File(directory.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + SUBDIR_NAME + versionNo).exists() == true) {
 			versionNo++;
 		}
 		File destinationDirectory = new File(directory.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + versionNo);
