@@ -18,7 +18,7 @@ public class FileOperations {
 	}
 	
 	public static File findPDFFile(File sourceDir) throws SearchedFileNotExistsException {
-		return FileOperations.findFile(sourceDir, fileNames, FileOperations.generatedFileExtensions.PDF.getStringValue());
+		return FileOperations.findFile(sourceDir, FileOperations.fileNames, FileOperations.generatedFileExtensions.PDF.getStringValue());
 	}
 	
 	public static File findTexFile(File sourceDir) throws SearchedFileNotExistsException {
