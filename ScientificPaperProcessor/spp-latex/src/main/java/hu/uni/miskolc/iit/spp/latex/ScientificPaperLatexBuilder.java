@@ -9,12 +9,10 @@ import hu.uni.miskolc.iit.spp.core.model.UsedDirectoryNames;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedArchiveExtensionException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
-import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedOperationSystemException;
 import hu.uni.miskolc.iit.spp.core.service.AbstractScientificPaperBuilder;
 import hu.uni.miskolc.iit.spp.latex.compile.Latex2PDFCompiler;
-import hu.uni.miskolc.iit.spp.latex.compile.LatexCompilerFactory;
-import hu.uni.miskolc.iit.spp.latex.fileOperations.DestinationDirectory;
-import hu.uni.miskolc.iit.spp.latex.fileOperations.Unpacking;
+import hu.uni.miskolc.iit.spp.latex.operations.DirectoryOperations;
+import hu.uni.miskolc.iit.spp.latex.operations.Unpacking;
 
 public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder {
 	
@@ -22,8 +20,10 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	
 	private File directoryForTexFile;
 	private File directoryForPDFFile;
+	private Latex2PDFCompiler compiler;
 	
-	public ScientificPaperLatexBuilder() {
+	public ScientificPaperLatexBuilder(Latex2PDFCompiler compiler){
+		this.compiler = compiler;
 	}
 
 	@Override
@@ -37,13 +37,9 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	@Override
 	protected File generatePDF(File paper) throws ConversionToPDFException, IOException {
 		try {	
-			LatexCompilerFactory factory = new LatexCompilerFactory();
-			Latex2PDFCompiler compiler = factory.createLatexPDFCompiler();
-			this.directoryForPDFFile = DestinationDirectory.createDestinationDir(paper, DESTIONATION_DIR_NAME);
-			File pdfFile = compiler.generatePDFFile(this.directoryForTexFile, this.directoryForPDFFile);
+			this.directoryForPDFFile = DirectoryOperations.createDestinationDir(paper, DESTIONATION_DIR_NAME);
+			File pdfFile = this.compiler.generatePDFFile(this.directoryForTexFile, this.directoryForPDFFile);
 			return pdfFile;
-		} catch (NotSupportedOperationSystemException e) {
-			throw new ConversionToPDFException(e.getMessage());
 		} catch (IOException e) {
 			throw new IOException(e.getMessage());
 		}
