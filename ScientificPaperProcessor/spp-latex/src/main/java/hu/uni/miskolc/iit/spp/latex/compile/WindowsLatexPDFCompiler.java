@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
-import hu.uni.miskolc.iit.spp.latex.fileOperations.FileSearch;
+import hu.uni.miskolc.iit.spp.latex.operations.FileOperations;
 
 public class WindowsLatexPDFCompiler extends Latex2PDFCompiler {
 
@@ -35,8 +35,7 @@ public class WindowsLatexPDFCompiler extends Latex2PDFCompiler {
 
 	@Override
 	protected String commandForTerminal(File sourceDir, File destinationDir) throws SearchedFileNotExistsException {
-		FileSearch file = new FileSearch(sourceDir);
-		File mainFile = file.findTexFile();
+		File mainFile = FileOperations.findTexFile(sourceDir);
 		String fullCommand = 	this.compilerArg + 
 								this.includeDirArg + 
 								sourceDir.getAbsolutePath() + 
