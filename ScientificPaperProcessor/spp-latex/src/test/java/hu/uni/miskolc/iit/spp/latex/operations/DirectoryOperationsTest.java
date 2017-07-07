@@ -22,9 +22,8 @@ public class DirectoryOperationsTest {
 
 	@Test
 	public void testCreateDestinationDir_OneDirectoryWithOneSubdir() throws IOException {
-		DirectoryOperations.createDestinationDir(DirectoryOperationsTest.startFile, DirectoryOperationsTest.targetDirName);
-		
-		File targetDir = new File(RESOURCES_DIR_PATH + DirectoryOperationsTest.targetDirName);
+		DirectoryOperations.createDestinationDir(startFile, targetDirName);
+		File targetDir = new File(RESOURCES_DIR_PATH + targetDirName);
 		File version_0_Subdir = new File(targetDir.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + "version_0");
 		
 		assertTrue(targetDir.exists() && version_0_Subdir.exists());
@@ -33,9 +32,9 @@ public class DirectoryOperationsTest {
 	@Test
 	public void testCreateDestinationDir_OneDirectoryWithMoreSubdirs() throws IOException {
 		for(int i = 0; i < 2; i++) {
-			DirectoryOperations.createDestinationDir(DirectoryOperationsTest.startFile, DirectoryOperationsTest.targetDirName);
+			DirectoryOperations.createDestinationDir(startFile, targetDirName);
 		}
-		File targetDir = new File(RESOURCES_DIR_PATH + DirectoryOperationsTest.targetDirName);
+		File targetDir = new File(RESOURCES_DIR_PATH + targetDirName);
 		File version_1_Subdir = new File(targetDir.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + "version_1");
 		
 		assertTrue(targetDir.exists() && version_1_Subdir.exists());
@@ -43,12 +42,12 @@ public class DirectoryOperationsTest {
 	
 	@Test
 	public void testCreateDestinationDir_MoreDirectoriesWithOneSubdir() throws IOException {
-		DirectoryOperations.createDestinationDir(DirectoryOperationsTest.startFile, DirectoryOperationsTest.targetDirName);
-		DirectoryOperations.createDestinationDir(DirectoryOperationsTest.startFile, DirectoryOperationsTest.generatedDirName);
+		DirectoryOperations.createDestinationDir(startFile, targetDirName);
+		DirectoryOperations.createDestinationDir(startFile, generatedDirName);
 		
-		File targetDir = new File(RESOURCES_DIR_PATH + DirectoryOperationsTest.targetDirName);
+		File targetDir = new File(RESOURCES_DIR_PATH + targetDirName);
 		File targetDirSubdir = new File(targetDir.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + "version_0");
-		File generatedDir = new File(RESOURCES_DIR_PATH + DirectoryOperationsTest.generatedDirName);
+		File generatedDir = new File(RESOURCES_DIR_PATH + generatedDirName);
 		File generatedDirSubdir = new File(generatedDir.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + "version_0");
 		
 		assertTrue(	targetDir.exists() && targetDirSubdir.exists() && 
@@ -58,12 +57,12 @@ public class DirectoryOperationsTest {
 	@Test
 	public void testCreateDestinationDir_MoreDirectoriesWithMoreSubdirs() throws IOException {
 		for(int i = 0; i < 2; i++) {
-			DirectoryOperations.createDestinationDir(DirectoryOperationsTest.startFile, DirectoryOperationsTest.targetDirName);
-			DirectoryOperations.createDestinationDir(DirectoryOperationsTest.startFile, DirectoryOperationsTest.generatedDirName);
+			DirectoryOperations.createDestinationDir(startFile, targetDirName);
+			DirectoryOperations.createDestinationDir(startFile, generatedDirName);
 		}
-		File targetDir = new File(RESOURCES_DIR_PATH + DirectoryOperationsTest.targetDirName);
+		File targetDir = new File(RESOURCES_DIR_PATH + targetDirName);
 		File targetDirSecondSubdir = new File(targetDir.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + "version_1");
-		File generatedDir = new File(RESOURCES_DIR_PATH + DirectoryOperationsTest.generatedDirName);
+		File generatedDir = new File(RESOURCES_DIR_PATH + generatedDirName);
 		File generatedDirSecondSubdir = new File(generatedDir.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + "version_1");
 		
 		assertTrue(	targetDir.exists() && targetDirSecondSubdir.exists() && 
@@ -72,18 +71,18 @@ public class DirectoryOperationsTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		DirectoryOperationsTest.startFile = new File(RESOURCES_DIR_PATH + "start.txt");
-		DirectoryOperationsTest.targetDirName = UsedDirectoryNames.DIR_FOR_EXTRACT_FILES.getStringValue();
-		DirectoryOperationsTest.generatedDirName = UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue();
+		startFile = new File(RESOURCES_DIR_PATH + "start.txt");
+		targetDirName = UsedDirectoryNames.DIR_FOR_EXTRACT_FILES.getStringValue();
+		generatedDirName = UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		File targetDir = new File(RESOURCES_DIR_PATH + DirectoryOperationsTest.targetDirName);
+		File targetDir = new File(RESOURCES_DIR_PATH + targetDirName);
 		if (targetDir.exists()) {
 			removeDirectory(targetDir);
 		}
-		File generatedDir = new File(RESOURCES_DIR_PATH + DirectoryOperationsTest.generatedDirName);
+		File generatedDir = new File(RESOURCES_DIR_PATH + generatedDirName);
 		if (generatedDir.exists()) {
 			removeDirectory(generatedDir);
 		}
