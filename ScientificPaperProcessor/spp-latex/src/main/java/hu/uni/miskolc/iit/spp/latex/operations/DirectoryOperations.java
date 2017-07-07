@@ -22,7 +22,7 @@ public class DirectoryOperations {
 		while(new File(directory.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + SUBDIR_NAME + versionNo).exists() == true) {
 			versionNo++;
 		}
-		File destinationDirectory = new File(directory.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + versionNo);
+		File destinationDirectory = new File(directory.getAbsolutePath() + System.getProperty(FILE_SEPARATOR) + SUBDIR_NAME + versionNo);
 		if(destinationDirectory.mkdir() == false) {
 			throw new IOException("Could not create directory: " + destinationDirectory.getAbsolutePath());
 		}
