@@ -2,6 +2,8 @@ package hu.uni.miskolc.iit.spp.latex.operations;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
+
 import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableTextFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.SupportedFileNames;
 import hu.uni.miskolc.iit.spp.core.model.SupportedGeneratedFileExtensions;
@@ -26,20 +28,26 @@ public class FileOperations {
 	}
 	
 	private static File findFile(File sourceDir, SupportedFileNames fileNames, String extension) throws SearchedFileNotExistsException {
-		if(sourceDir.isDirectory()) {
-			for(File dirFiles : sourceDir.listFiles()) {
-				File wantedFile = FileOperations.findFile(dirFiles, fileNames, extension);
-				if(wantedFile != null) {
-					return wantedFile;
+		File[] dirFiles = sourceDir.listFiles();
+		if(dirFiles != null && dirFiles.length > 0) {
+			for(File file : dirFiles) {
+				if(file.isDirectory()) {
+					return FileOperations.findFile(file, fileNames, extension);
+				}
+				boolean isAccaptedName = SubmissionChecker.isAccaptedName(file);
+				boolean isCompileable = SubmissionChecker.isCompileable(file);
+				boolean isGenerated = SubmissionChecker.isGenerated(file); 
+				if(isAccaptedName && (isCompileable || isGenerated)) {
+					if(isThatExtension(file, extension)) {
+						return file;
+					}
 				}
 			}
 		}
-		boolean isAccaptedName = SubmissionChecker.isAccaptedName(sourceDir);
-		boolean isCompileable = SubmissionChecker.isCompileable(sourceDir);
-		boolean isGenerated = SubmissionChecker.isGenerated(sourceDir); 
-		if(isAccaptedName && (isCompileable || isGenerated)) {
-			return sourceDir;
-		}
 		throw new SearchedFileNotExistsException();
+	}
+	
+	private static boolean isThatExtension(File testedFile, String extension) {
+		return extension.equals(FilenameUtils.getExtension(testedFile.getAbsolutePath()));
 	}
 }
