@@ -4,6 +4,10 @@
 *.ear
 *.class
 
+# intellij specific git ignore
+.idea/**/*.xml
+.idea/**/*.iml
+
 # eclipse specific git ignore
 *.pydevproject
 .project
