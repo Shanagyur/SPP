@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -42,15 +40,6 @@ public class UnpackingTest {
 	public static void setUpBeforeClass() throws Exception {
 		UnpackingTest.zipFile = new File(RESOURCES_DIR_PATH + "zipFile.zip");
 		UnpackingTest.rarFile = new File(RESOURCES_DIR_PATH + "rarFile.rar");
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
-		
 	}
 
 	@After
