@@ -12,7 +12,7 @@ public class LatexCompilerFactory {
 	}
 
 	public Latex2PDFCompiler createLatexPDFCompiler() throws NotSupportedOperationSystemException {
-		if(SubmissionChecker.isSupportedOS()) {
+		if(SubmissionChecker.isSupportedOS(System.getProperty(OS_NAME))) {
 			if(isLinux()) {
 				return new LinuxLatexPDFCompiler();
 			}
