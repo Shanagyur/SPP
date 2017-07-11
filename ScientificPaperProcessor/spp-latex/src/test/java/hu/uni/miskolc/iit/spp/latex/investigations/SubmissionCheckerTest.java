@@ -27,7 +27,20 @@ public class SubmissionCheckerTest {
 
 	@Test
 	public void testIsSupportedOS_Linux() {
-		assertTrue(SubmissionChecker.isSupportedOS());
+		String testedOS = "LINUX_nextGen_500";
+		assertTrue(SubmissionChecker.isSupportedOS(testedOS));
+	}
+	
+	@Test
+	public void testIsSupportedOS_Windows() {
+		String testedOS = "WINdows_15_studentVersion";
+		assertTrue(SubmissionChecker.isSupportedOS(testedOS));
+	}
+	
+	@Test
+	public void testIsSupportedOS_Other() {
+		String testedOS = "Mac_OS";
+		assertFalse(SubmissionChecker.isSupportedOS(testedOS));
 	}
 	
 	@Test
