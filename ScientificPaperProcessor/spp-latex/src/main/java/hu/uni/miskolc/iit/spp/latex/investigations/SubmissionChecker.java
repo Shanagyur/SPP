@@ -12,8 +12,6 @@ import hu.uni.miskolc.iit.spp.core.model.SupportedOperationSystems;
 
 public class SubmissionChecker {
 
-	private static final String OS_NAME = "os.name";
-	
 	private static SupportedFileNames supportedFileNames;
 	private static SupportedOperationSystems supportedOperationSystems;
 	private static SupportedArchiveExtensions supportedArchiveExtensions;
@@ -33,10 +31,10 @@ public class SubmissionChecker {
 		return false;
 	}
 	
-	public static boolean isSupportedOS() {
-		String osName = System.getProperty(OS_NAME);
+	public static boolean isSupportedOS(String usedOS) {
+		String osName = usedOS.toLowerCase();
 		for(SupportedOperationSystems name : SubmissionChecker.supportedOperationSystems.values()) {
-			if(osName.toLowerCase().contains(name.getStringValue())) {
+			if(osName.contains(name.getStringValue())) {
 				return true;
 			}
 		}
