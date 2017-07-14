@@ -1,7 +1,7 @@
 package hu.uni.miskolc.iit.spp.latex.compile;
 
 public enum LinuxArgs {
-	COMPILER("pdflates "),
+	COMPILER("pdflatex "),
 	OUTPUT("-output-directory=");
 	
 	private String argument;

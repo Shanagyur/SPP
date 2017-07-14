@@ -1,161 +1,145 @@
 package hu.uni.miskolc.iit.spp.latex;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import hu.uni.miskolc.iit.spp.core.model.SupportedOperationSystems;
+import hu.uni.miskolc.iit.spp.core.model.UsedDirectoryNames;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
-import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
+import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
+import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedArchiveExtensionException;
+import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedOperationSystemException;
+import hu.uni.miskolc.iit.spp.latex.archive.LatexArchiveValidatorFactory;
+import hu.uni.miskolc.iit.spp.latex.compile.LatexCompilerFactory;
 
 public class ScientificPaperLatexBuilderTest {
+	
+	private static final String ASSUME_EXCEPTION_CONSTANS = "pdflatex -version";
+	private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
+	private static final String RESOURCES_PATH = "src" + FILE_SEPARATOR + "resources" + FILE_SEPARATOR + "latexPackages" + FILE_SEPARATOR;
+	private static File mainTexZip;
+	private static File wrongTexZip;
+	private static File pdfFile;
+	private LatexCompilerFactory compilerFact;
+	private ScientificPaperLatexBuilder latexBuilder;
+	
+	@Test
+	public void testCheckFileExtension() throws NotSupportedArchiveExtensionException, NotSupportedOperationSystemException, NoMainDocumentFoundException, IOException {
+		assumeTrue("Ignore test, because can't run this operation system.", 
+				(OS_NAME.contains(SupportedOperationSystems.LINUX.getStringValue())) 
+				|| 
+				(OS_NAME.contains(SupportedOperationSystems.WINDOWS.getStringValue()))
+				);
+		LatexArchiveValidatorFactory validatorFact = new LatexArchiveValidatorFactory(mainTexZip);
+		latexBuilder = new ScientificPaperLatexBuilder(compilerFact.createLatexPDFCompiler(), validatorFact.createArchiveValidator());
+		latexBuilder.checkFileExtension(mainTexZip);
+	}
+	
+	@Test(expected = NoMainDocumentFoundException.class)
+	public void testCheckFileExtension_ThrowNoMainDocumentFoundException() throws NotSupportedArchiveExtensionException, NotSupportedOperationSystemException, NoMainDocumentFoundException, IOException {
+		assumeTrue("Ignore test, because can't run this operation system.", 
+				(OS_NAME.contains(SupportedOperationSystems.LINUX.getStringValue())) 
+				|| 
+				(OS_NAME.contains(SupportedOperationSystems.WINDOWS.getStringValue()))
+				);
+		LatexArchiveValidatorFactory validatorFact = new LatexArchiveValidatorFactory(wrongTexZip);
+		latexBuilder = new ScientificPaperLatexBuilder(compilerFact.createLatexPDFCompiler(), validatorFact.createArchiveValidator());
+		latexBuilder.checkFileExtension(wrongTexZip);
+	}
 
-	private ScientificPaperLatexBuilder testElement;
-	
-	// try to extract a rar file
-	@Ignore("ignore for some tests")
-	@Test(expected = NotSupportedFileExtensionException.class)
-	public void testCheckFileExtension_unzipMethodWithRarFile() throws NotSupportedFileExtensionException, IOException {
-		File testRar = new File("src\\resources\\dummyTxtInRar.rar");
-		testElement.checkFileExtension(testRar);
-	}
-	
-	// create targetDir with version_0 subdir
-	@Ignore("ignore for some tests")
 	@Test
-	public void testCheckFileExtension_unzipMethodCreateDestinationDirectoryMethod() throws NotSupportedFileExtensionException, IOException {
-		File testZip = new File("src\\resources\\dummyTexInZip.zip");
-		testElement.checkFileExtension(testZip);
-			
-		File targetDir = new File("src\\resources\\targetDir");
-		File version_0Dir = new File("src\\resources\\targetDir\\version_0");
-			
-		assertTrue(targetDir.exists() && version_0Dir.exists());
-	}
-	
-	// create targetDir with version_0 & version_1 subdir
-	@Ignore("ignore for some tests")
-	@Test
-	public void testCheckFileExtension_unzipMethodCreateDestinationDirectoryMethodMoreTimes() throws NotSupportedFileExtensionException, IOException {
-		File testZip = new File("src\\resources\\dummyTexInZip.zip");
-		for(int i = 0; i < 2; i++) {
-			testElement.checkFileExtension(testZip);
+	public void testGeneratePDF() throws NotSupportedArchiveExtensionException, NotSupportedOperationSystemException, ConversionToPDFException, IOException, NoMainDocumentFoundException {
+		assumeTrue("Ignore test, because can't run this operation system.", 
+				(OS_NAME.contains(SupportedOperationSystems.LINUX.getStringValue())) 
+				|| 
+				(OS_NAME.contains(SupportedOperationSystems.WINDOWS.getStringValue()))
+				);
+		try {
+			Runtime.getRuntime().exec(ASSUME_EXCEPTION_CONSTANS);
+		} catch (Exception e) {
+			assumeNoException("Ignore test, because can't compile .tex files.", e);
 		}
-			
-		File targetDir = new File("src\\resources\\targetDir");
-		File version_1Dir = new File("src\\resources\\targetDir\\version_1");
-			
-		assertTrue(targetDir.exists() && version_1Dir.exists());
-	}
-	
-	// can extract but don't exist .tex file
-	@Ignore("ignore for some tests")
-	@Test(expected = NotSupportedFileExtensionException.class)
-	public void testCheckFileExtension_checkUnzipFilesExtension() throws NotSupportedFileExtensionException, IOException {
-		File testZip = new File("src\\resources\\dummyTxtInZip.zip");
-		testElement.checkFileExtension(testZip);
+		LatexArchiveValidatorFactory validatorFact = new LatexArchiveValidatorFactory(mainTexZip);
+		latexBuilder = new ScientificPaperLatexBuilder(compilerFact.createLatexPDFCompiler(), validatorFact.createArchiveValidator());
+		latexBuilder.checkFileExtension(mainTexZip);
+		latexBuilder.generatePDF(mainTexZip);
+		assertTrue(pdfFile.exists());
 	}
 
-	@Ignore("Not yet implemented")
 	@Test
+	@Ignore("Not yet implemented")
 	public void testExtractTitle() {
+		fail("Not yet implemented");
 	}
 
-	@Ignore("Not yet implemented")
 	@Test
+	@Ignore("Not yet implemented")
 	public void testExtractAbstarct() {
+		fail("Not yet implemented");
 	}
 
-	@Ignore("Not yet implemented")
 	@Test
+	@Ignore("Not yet implemented")
 	public void testExtractKeywords() {
+		fail("Not yet implemented");
 	}
 
-	@Ignore("Not yet implemented")
 	@Test
+	@Ignore("Not yet implemented")
 	public void testExtractAuthors() {
+		fail("Not yet implemented");
 	}
 
-	// create generatedDir with version_0 subdir
-	@Ignore("ignore for some tests")
-	@Test
-	public void testGeneratePDF_commandMethodCreateDestinationDirectoryMethod() throws NotSupportedFileExtensionException, IOException, ConversionToPDFException {
-		File testZip = new File("src\\resources\\dummyTexInZip.zip");
-		testElement.checkFileExtension(testZip);
-		testElement.generatePDF(testZip);
-		
-		File generatedDir = new File("src\\resources\\generatedDir");
-		File version_0Dir = new File("src\\resources\\generatedDir\\version_0");
-		
-		assertTrue(generatedDir.exists() && version_0Dir.exists());
-	}
-	
-	// create generatedDir with version_0 & version_1 subdir
-	@Ignore("ignore for some tests")
-	@Test
-	public void testGeneratePDF_commandMethodCreateDestinationDirectoryMethodMoreTimes() throws NotSupportedFileExtensionException, IOException, ConversionToPDFException {
-		File testZip = new File("src\\resources\\dummyTexInZip.zip");
-		testElement.checkFileExtension(testZip);
-		for(int i = 0; i < 2; i++) {
-			testElement.generatePDF(testZip);
-		}
-		
-		File generatedDir = new File("src\\resources\\generatedDir");
-		File version_1Dir = new File("src\\resources\\generatedDir\\version_1");
-		
-		assertTrue(generatedDir.exists() && version_1Dir.exists());
-	}
-	
-	// good .tex file but not acceptable name
-	@Ignore("ignore for some tests")
-	@Test(expected = ConversionToPDFException.class)
-	public void testGeneratePDF_commandMethodSelectMainFileMethod() throws NotSupportedFileExtensionException, IOException, ConversionToPDFException {
-		File testZip = new File("src\\resources\\dummyTexInZipWithBadName.zip");
-		testElement.checkFileExtension(testZip);
-		testElement.generatePDF(testZip);
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		mainTexZip = new File(RESOURCES_PATH + "mainTex.zip");
+		wrongTexZip = new File(RESOURCES_PATH + "wrongTex.zip");
+		pdfFile = new File(RESOURCES_PATH + UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue() + FILE_SEPARATOR + "version_0" + FILE_SEPARATOR + "main.pdf");
 	}
 
-	@Ignore("Not yet implemented")
-	@Test
-	public void testScientificPaperLatexBuilder() {
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
 	}
-	
+
+	@Before
+	public void setUp() throws Exception {
+		compilerFact = new LatexCompilerFactory(OS_NAME);
+	}
+
 	@After
-	public void tearDown() {
-		File targetDir = new File("src\\resources\\targetDir");
-		if(targetDir.exists()) {
-			System.out.println("targetDir existed & deleted");
+	public void tearDown() throws Exception {
+		File targetDir = new File(RESOURCES_PATH + UsedDirectoryNames.DIR_FOR_EXTRACT_FILES.getStringValue());
+		if (targetDir.exists()) {
 			removeDirectory(targetDir);
 		}
-		File generatedDir = new File("src\\resources\\generatedDir");
-		if(generatedDir.exists()) {
-			System.out.println("generatedDir existed & deleted");
+		File generatedDir = new File(RESOURCES_PATH + UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue());
+		if (generatedDir.exists()) {
 			removeDirectory(generatedDir);
 		}
 	}
-
+	
 	private void removeDirectory(File dir) {
-		if(dir.isDirectory()) {
+		if (dir.isDirectory()) {
 			File[] files = dir.listFiles();
-			if(files != null && files.length > 0) {
+			if (files != null && files.length > 0) {
 				for (File aFile : files) {
 					removeDirectory(aFile);
 				}
-	        }
-	        dir.delete();
-	    } else {
-	        dir.delete();
-	    }
+			}
+			dir.delete();
+		} else {
+			dir.delete();
+		}
 	}
-/*	
-	@Before
-	public void setUp() {
-		this.testElement = new ScientificPaperLatexBuilder();
-	}
-*/
 }

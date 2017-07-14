@@ -8,29 +8,26 @@ import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedOperationSystemEx
 
 public class LatexCompilerFactoryTest {
 
-	private String osName;
-	private LatexCompilerFactory testFactory;
-	
-	@Test
-	public void testCreateLatexPDFCompiler_ReturnLinuxLatexPDFCompiler() throws NotSupportedOperationSystemException {
-		osName = "linux";
-		testFactory = new LatexCompilerFactory(osName);
-		Latex2PDFCompiler actual = testFactory.createLatexPDFCompiler();
-		assertEquals(LinuxLatexPDFCompiler.class, actual.getClass());
-	}
-	
-	@Test
-	public void testCreateLatexPDFCompiler_ReturnWindowsLatexPDFCompiler() throws NotSupportedOperationSystemException {
-		osName = "windows";
-		testFactory = new LatexCompilerFactory(osName);
-		Latex2PDFCompiler actual = testFactory.createLatexPDFCompiler();
-		assertEquals(WindowsLatexPDFCompiler.class, actual.getClass());
-	}
+	private LatexCompilerFactory factory;
+	private Latex2PDFCompiler compiler;
 	
 	@Test(expected = NotSupportedOperationSystemException.class)
-	public void testCreateLatexPDFCompiler_ReturnException() throws NotSupportedOperationSystemException {
-		osName = "Mac_OS";
-		testFactory = new LatexCompilerFactory(osName);
-		Latex2PDFCompiler actual = testFactory.createLatexPDFCompiler();
+	public void testCreateLatexPDFCompiler_WrongOS() throws NotSupportedOperationSystemException {
+		factory = new LatexCompilerFactory("mac_os");
+		compiler = factory.createLatexPDFCompiler();
+	}
+	
+	@Test
+	public void testCreateLatexPDFCompiler_LinuxCompiler() throws NotSupportedOperationSystemException {
+		factory = new LatexCompilerFactory("LInUX_nextGen");
+		compiler = factory.createLatexPDFCompiler();
+		assertEquals(LinuxLatexPDFCompiler.class, compiler.getClass());
+	}
+	
+	@Test
+	public void testCreateLatexPDFCompiler_WindowsCompiler() throws NotSupportedOperationSystemException {
+		factory = new LatexCompilerFactory("WINdows15_for_Students");
+		compiler = factory.createLatexPDFCompiler();
+		assertEquals(WindowsLatexPDFCompiler.class, compiler.getClass());
 	}
 }

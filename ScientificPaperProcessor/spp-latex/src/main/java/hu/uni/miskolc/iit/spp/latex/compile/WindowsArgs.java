@@ -1,7 +1,7 @@
 package hu.uni.miskolc.iit.spp.latex.compile;
 
 public enum WindowsArgs {
-	COMPILER("pdflates "),
+	COMPILER("pdflatex "),
 	INCLUDE("-include-directory="),
 	OUTPUT(" -output-directory=");
 	

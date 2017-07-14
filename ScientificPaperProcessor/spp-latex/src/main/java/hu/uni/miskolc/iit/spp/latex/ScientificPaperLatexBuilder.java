@@ -5,44 +5,33 @@ import java.io.IOException;
 import java.util.List;
 
 import hu.uni.miskolc.iit.spp.core.model.Author;
-import hu.uni.miskolc.iit.spp.core.model.UsedDirectoryNames;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
-import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedArchiveExtensionException;
-import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
+import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
 import hu.uni.miskolc.iit.spp.core.service.AbstractScientificPaperBuilder;
+import hu.uni.miskolc.iit.spp.latex.archive.LatexArchiveValidator;
 import hu.uni.miskolc.iit.spp.latex.compile.Latex2PDFCompiler;
-import hu.uni.miskolc.iit.spp.latex.operations.DirectoryOperations;
-import hu.uni.miskolc.iit.spp.latex.operations.Unpacking;
 
 public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder {
 	
-	private static final String DESTIONATION_DIR_NAME = UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue();
-	
-	private File directoryForTexFile;
-	private File directoryForPDFFile;
 	private Latex2PDFCompiler compiler;
+	private LatexArchiveValidator validator;
 	
-	public ScientificPaperLatexBuilder(Latex2PDFCompiler compiler){
+	public ScientificPaperLatexBuilder(Latex2PDFCompiler compiler, LatexArchiveValidator validator) {
 		this.compiler = compiler;
+		this.validator = validator;
 	}
 
 	@Override
-	protected void checkFileExtension(File paper) throws NotSupportedFileExtensionException, IOException {
-		try {
-			this.directoryForTexFile = Unpacking.unzip(paper);
-		} catch (NotSupportedArchiveExtensionException e) {
-			throw new NotSupportedFileExtensionException(e.getMessage());
+	protected void checkFileExtension(File paper) throws NoMainDocumentFoundException, IOException {
+		if(!this.validator.validate(paper)) {
+			throw new NoMainDocumentFoundException("Could unpack, but directory not contained main.tex or paper.tex file.");
 		}
 	}
+	
 	@Override
 	protected File generatePDF(File paper) throws ConversionToPDFException, IOException {
-		try {	
-			this.directoryForPDFFile = DirectoryOperations.createDestinationDir(paper, DESTIONATION_DIR_NAME);
-			File pdfFile = this.compiler.generatePDFFile(this.directoryForTexFile, this.directoryForPDFFile);
+			File pdfFile = this.compiler.generatePDFFile(paper);
 			return pdfFile;
-		} catch (IOException e) {
-			throw new IOException(e.getMessage());
-		}
 	}
 	@Override
 	protected String extractTitle(File paper) {

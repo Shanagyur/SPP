@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import hu.uni.miskolc.iit.spp.core.model.ScientificPaper;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
-import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
+import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
 
 public class CompositeScientificPaperBuilder implements ScientificPaperBuilder {
 
@@ -18,28 +18,20 @@ public class CompositeScientificPaperBuilder implements ScientificPaperBuilder {
 	}
 
 	@Override
-	public ScientificPaper build(String sourceFilePath) throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
+	public ScientificPaper build(String sourceFilePath) throws NoMainDocumentFoundException, ConversionToPDFException, IOException {
 		for(ScientificPaperBuilder builder : builders) {
-			try {
-				ScientificPaper paper = builder.build(sourceFilePath);
-				return paper;
-			} catch (NotSupportedFileExtensionException e) {
-
-			}
+			ScientificPaper paper = builder.build(sourceFilePath);
+			return paper;
 		}
-		throw new NotSupportedFileExtensionException();
+		throw new IOException();
 	}
 
 	@Override
-	public ScientificPaper build(File paper) throws NotSupportedFileExtensionException, ConversionToPDFException, IOException {
+	public ScientificPaper build(File paper) throws NoMainDocumentFoundException, ConversionToPDFException, IOException {
 		for(ScientificPaperBuilder builder : builders) {
-			try {
-				ScientificPaper result = builder.build(paper);
-				return result;
-			} catch (NotSupportedFileExtensionException e) {
-
-			}
+			ScientificPaper result = builder.build(paper);
+			return result;
 		}
-		throw new NotSupportedFileExtensionException();
+		throw new IOException();
 	}
 }
