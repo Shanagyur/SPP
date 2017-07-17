@@ -6,6 +6,8 @@ import java.io.IOException;
 import hu.uni.miskolc.iit.spp.core.model.UsedDirectoryNames;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
 import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class Latex2PDFCompiler {
 
@@ -13,6 +15,7 @@ public abstract class Latex2PDFCompiler {
 	private static final String DESTINATION_DIR_NAME = UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue();
 	private static final String SOURCE_DIR_NAME = UsedDirectoryNames.DIR_FOR_EXTRACT_FILES.getStringValue();
 	private static final String SUBDIR_NAME = "version_"; 
+	private static Logger LOG = LogManager.getLogger(Latex2PDFCompiler.class);
 	protected String compilerArg;
 	protected String outputDirArg;
 	
@@ -27,8 +30,10 @@ public abstract class Latex2PDFCompiler {
 			File pdf = compile(sourceDir, destinationDir);
 			return pdf;
 		} catch (SearchedFileNotExistsException e) {
+			LOG.fatal("Catch SearchedFileNotExistsException this message: " + e.getMessage() + "\nAnd throw ConversionToPDFException with the same message.");
 			throw new ConversionToPDFException(e.getMessage());
 		} catch (IOException e) {
+			LOG.fatal("Catch IOException this message: " + e.getMessage() + "\nAnd throw ConversionToPDFException with the same message.");
 			throw new ConversionToPDFException(e.getMessage());
 		}
 	}
@@ -43,6 +48,7 @@ public abstract class Latex2PDFCompiler {
 		File directory = new File(paper.getParentFile().getAbsolutePath() + FILE_SEPARATOR + DESTINATION_DIR_NAME);
 		if(directory.exists() == false) {
 			if(directory.mkdir() == false) {
+				LOG.fatal("Throw IOException this message: Could not create directory: " + directory.getAbsolutePath());
 				throw new IOException("Could not create directory: " + directory.getAbsolutePath());
 			}
 		}
@@ -52,6 +58,7 @@ public abstract class Latex2PDFCompiler {
 		}
 		File destinationDir = new File(directory.getAbsolutePath() + FILE_SEPARATOR + SUBDIR_NAME + versionNo);
 		if(destinationDir.mkdir() == false) {
+			LOG.fatal("Throw IOException this message: Could not create directory: " + destinationDir.getAbsolutePath());
 			throw new IOException("Could not create directory: " + destinationDir.getAbsolutePath());
 		}
 		return destinationDir;
@@ -60,6 +67,7 @@ public abstract class Latex2PDFCompiler {
 	private File findSourceDir(File paper) throws IOException {
 		File rootDir = new File(paper.getParentFile().getAbsolutePath() + FILE_SEPARATOR + SOURCE_DIR_NAME);
 		if(rootDir.exists() == false) {
+			LOG.fatal("Throw IOException this message: Directory with tex file not exists.");
 			throw new IOException("Directory with tex file not exists.");
 		}
 		int subdirsNo = rootDir.listFiles().length;

@@ -6,9 +6,12 @@ import org.apache.commons.io.FilenameUtils;
 
 import hu.uni.miskolc.iit.spp.core.model.SupportedArchiveExtensions;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedArchiveExtensionException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LatexArchiveValidatorFactory {
 
+	private static Logger LOG = LogManager.getLogger(LatexArchiveValidatorFactory.class);
 	private File archive;
 
 	public LatexArchiveValidatorFactory(File archive) {
@@ -21,6 +24,7 @@ public class LatexArchiveValidatorFactory {
 				return new LatexZipArchiveValidator(archive);
 			}
 		}
+		LOG.fatal("Throw NotSupportedArchiveExtensionException this message: Could not unpack, because " + archive.getName() + " extension not supported.");
 		throw new NotSupportedArchiveExtensionException("Could not unpack, because " + archive.getName() + " extension not supported.");
 	}
 

@@ -11,9 +11,12 @@ import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableTextFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.SupportedFileNames;
 import hu.uni.miskolc.iit.spp.core.model.SupportedGeneratedFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class WindowsLatexPDFCompiler extends Latex2PDFCompiler {
 
+	private static Logger LOG = LogManager.getLogger(WindowsLatexPDFCompiler.class);
 	private String includeDirArg;
 	
 	protected WindowsLatexPDFCompiler() {
@@ -56,6 +59,7 @@ public class WindowsLatexPDFCompiler extends Latex2PDFCompiler {
 			File texFile = findFile(sourceDir, SupportedCompileableTextFileExtensions.TEX.getStringValue());
 			return texFile;
 		} catch (SearchedFileNotExistsException e) {
+			LOG.fatal("Catch SearchedFileNotExistsException and throw a new with this message: Not found main.tex or paper.tex file.");
 			throw new SearchedFileNotExistsException("Not found main.tex or paper.tex file.");
 		}
 	}
@@ -65,6 +69,7 @@ public class WindowsLatexPDFCompiler extends Latex2PDFCompiler {
 			File pdfFile = findFile(sourceDir, SupportedGeneratedFileExtensions.PDF.getStringValue());
 			return pdfFile;
 		} catch (SearchedFileNotExistsException e) {
+			LOG.fatal("Catch SearchedFileNotExistsException and throw a new with this message: Not found main.pdf or paper.pdf file.");
 			throw new SearchedFileNotExistsException("Not found main.pdf or paper.pdf file.");
 		}
 	}
@@ -83,6 +88,7 @@ public class WindowsLatexPDFCompiler extends Latex2PDFCompiler {
 				}
 			}
 		}
+		LOG.fatal("Throw SearchedFileNotExistsException without message.");
 		throw new SearchedFileNotExistsException();
 	}
 

@@ -8,13 +8,15 @@ import org.apache.commons.io.FilenameUtils;
 import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableTextFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.SupportedFileNames;
 import hu.uni.miskolc.iit.spp.core.model.UsedDirectoryNames;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class LatexArchiveValidator {
 
 	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 	private static final String DESTINATION_DIR_NAME = UsedDirectoryNames.DIR_FOR_EXTRACT_FILES.getStringValue();
 	private static final String SUBDIR_NAME = "version_";
-	
+	private static Logger LOG = LogManager.getLogger(LatexArchiveValidator.class);
 	private File archiveFromFactory;
 	
 	protected LatexArchiveValidator(File archive) {
@@ -27,6 +29,7 @@ public abstract class LatexArchiveValidator {
 			unpack(archive, destinationDir);
 			return isMainTeXFileContained(destinationDir);
 		}
+		LOG.fatal("Throw IOException this message: This and file from factory is not same.");
 		throw new IOException("This and file from factory is not same.");
 	}
 	
@@ -36,6 +39,7 @@ public abstract class LatexArchiveValidator {
 		File directory = new File(archive.getParentFile().getAbsolutePath() + FILE_SEPARATOR + DESTINATION_DIR_NAME);
 		if(directory.exists() == false) {
 			if(directory.mkdir() == false) {
+				LOG.fatal("Throw IOException this message: Could not create directory: " + directory.getAbsolutePath());
 				throw new IOException("Could not create directory: " + directory.getAbsolutePath());
 			}
 		}
@@ -45,6 +49,7 @@ public abstract class LatexArchiveValidator {
 		}
 		File destinationDir = new File(directory.getAbsolutePath() + FILE_SEPARATOR + SUBDIR_NAME + versionNo);
 		if(destinationDir.mkdir() == false) {
+			LOG.fatal("Throw IOException this message: Could not create directory: " + destinationDir.getAbsolutePath());
 			throw new IOException("Could not create directory: " + destinationDir.getAbsolutePath());
 		}
 		return destinationDir;

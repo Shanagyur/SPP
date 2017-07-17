@@ -5,8 +5,12 @@ import java.io.IOException;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LatexZipArchiveValidator extends LatexArchiveValidator {
+
+	private static Logger LOG = LogManager.getLogger(LatexZipArchiveValidator.class);
 
 	protected LatexZipArchiveValidator(File archive) {
 		super(archive);
@@ -18,6 +22,7 @@ public class LatexZipArchiveValidator extends LatexArchiveValidator {
 			ZipFile zipFile = new ZipFile(archive);
 			zipFile.extractAll(destinationDir.getAbsolutePath());
 		} catch (ZipException e) {
+			LOG.fatal("Catch ZipException this message: " + e.getMessage() + "\nAnd throw IOException with the same message");
 			throw new IOException(e.getMessage());
 		}
 	}

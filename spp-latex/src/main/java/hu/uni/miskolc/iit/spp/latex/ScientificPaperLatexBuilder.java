@@ -10,9 +10,12 @@ import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
 import hu.uni.miskolc.iit.spp.core.service.AbstractScientificPaperBuilder;
 import hu.uni.miskolc.iit.spp.latex.archive.LatexArchiveValidator;
 import hu.uni.miskolc.iit.spp.latex.compile.Latex2PDFCompiler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder {
-	
+
+	private static Logger LOG = LogManager.getLogger(ScientificPaperLatexBuilder.class);
 	private Latex2PDFCompiler compiler;
 	private LatexArchiveValidator validator;
 	
@@ -24,6 +27,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	@Override
 	protected void checkFileExtension(File paper) throws NoMainDocumentFoundException, IOException {
 		if(!this.validator.validate(paper)) {
+			LOG.fatal("Throw NoMainDocumentFoundException this message: Could unpack, but directory not contained main.tex or paper.tex file.");
 			throw new NoMainDocumentFoundException("Could unpack, but directory not contained main.tex or paper.tex file.");
 		}
 	}
