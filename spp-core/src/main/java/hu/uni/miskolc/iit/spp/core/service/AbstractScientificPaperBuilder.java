@@ -11,11 +11,11 @@ import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
 
 public abstract class AbstractScientificPaperBuilder implements ScientificPaperBuilder {
 
-	public final ScientificPaper build(String sourceFilePath) throws NoMainDocumentFoundException, ConversionToPDFException, IOException {
+	public ScientificPaper build(String sourceFilePath) throws NoMainDocumentFoundException, ConversionToPDFException, IOException {
 		return build(new File(sourceFilePath));
 	}
 	
-	public final ScientificPaper build(File paper) throws NoMainDocumentFoundException, ConversionToPDFException, IOException {
+	public ScientificPaper build(File paper) throws NoMainDocumentFoundException, ConversionToPDFException, IOException {
 		checkFileExtension(paper);
 		File paperPDF = generatePDF(paper);
 		String title = extractTitle(paper);

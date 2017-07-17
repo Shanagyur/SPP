@@ -18,10 +18,18 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private static Logger LOG = LogManager.getLogger(ScientificPaperLatexBuilder.class);
 	private Latex2PDFCompiler compiler;
 	private LatexArchiveValidator validator;
-	
+	private File sourceDir;
+
+/*
 	public ScientificPaperLatexBuilder(Latex2PDFCompiler compiler, LatexArchiveValidator validator) {
 		this.compiler = compiler;
 		this.validator = validator;
+	}
+*/
+
+	public ScientificPaperLatexBuilder(Latex2PDFCompiler compiler, File sourceDir) {
+		this.compiler = compiler;
+		this.sourceDir = sourceDir;
 	}
 
 	@Override

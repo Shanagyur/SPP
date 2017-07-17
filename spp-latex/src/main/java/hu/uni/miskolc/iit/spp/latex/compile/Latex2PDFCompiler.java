@@ -16,9 +16,10 @@ public abstract class Latex2PDFCompiler {
 	private static final String SOURCE_DIR_NAME = UsedDirectoryNames.DIR_FOR_EXTRACT_FILES.getStringValue();
 	private static final String SUBDIR_NAME = "version_"; 
 	private static Logger LOG = LogManager.getLogger(Latex2PDFCompiler.class);
+	private File sourceDir;
 	protected String compilerArg;
 	protected String outputDirArg;
-	
+
 	protected Latex2PDFCompiler() {
 		init();
 	}
@@ -26,7 +27,7 @@ public abstract class Latex2PDFCompiler {
 	public File generatePDFFile(File paper) throws ConversionToPDFException {
 		try {
 			File destinationDir = initDestinationDir(paper);
-			File sourceDir = findSourceDir(paper);
+			this.sourceDir = findSourceDir(paper);
 			File pdf = compile(sourceDir, destinationDir);
 			return pdf;
 		} catch (SearchedFileNotExistsException e) {
@@ -73,5 +74,9 @@ public abstract class Latex2PDFCompiler {
 		int subdirsNo = rootDir.listFiles().length;
 		File actualSubdir = new File(rootDir.getAbsolutePath() + FILE_SEPARATOR + SUBDIR_NAME + (subdirsNo - 1));
 		return actualSubdir;
+	}
+
+	public File getSourceDir() {
+		return sourceDir;
 	}
 }
