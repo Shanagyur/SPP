@@ -67,7 +67,7 @@ public class Latex2PDFCompilerTest {
 		
 		EasyMock.expect(mock1.compile(sourceDir, destinationDir_0)).andReturn(pdf);
 		EasyMock.expect(mock2.compile(sourceDir, destinationDir_1)).andReturn(pdf);
-		
+
 		mock1.generatePDFFile(startFile);
 		mock2.generatePDFFile(startFile);
 		
