@@ -19,7 +19,7 @@ public abstract class AbstractScientificPaperBuilder implements ScientificPaperB
 		checkFileExtension(paper);
 		File paperPDF = generatePDF(paper);
 		String title = extractTitle(paper);
-		String paperAbstract = extractAbstarct(paper);
+		String paperAbstract = extractAbstract(paper);
 		List<String> keywords = extractKeywords(paper);
 		List<Author> authors = extractAuthors(paper);
 		return new ScientificPaper(title, paperAbstract, keywords, authors, paperPDF);
@@ -27,8 +27,8 @@ public abstract class AbstractScientificPaperBuilder implements ScientificPaperB
 
 	protected abstract void checkFileExtension(File paper) throws NoMainDocumentFoundException, IOException;
 	protected abstract File generatePDF(File paper) throws ConversionToPDFException, IOException;
-	protected abstract String extractTitle(File paper);
-	protected abstract String extractAbstarct(File paper);
+	protected abstract String extractTitle(File paper) throws IOException;
+	protected abstract String extractAbstract(File paper);
 	protected abstract List<String> extractKeywords(File paper);
 	protected abstract List<Author> extractAuthors(File paper);
 }
