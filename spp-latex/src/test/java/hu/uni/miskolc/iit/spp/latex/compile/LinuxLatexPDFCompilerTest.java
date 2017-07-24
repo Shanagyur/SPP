@@ -1,99 +1,49 @@
 package hu.uni.miskolc.iit.spp.latex.compile;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FilenameUtils;
-import org.easymock.EasyMock;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableTextFileExtensions;
-import hu.uni.miskolc.iit.spp.core.model.SupportedOperationSystems;
-import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
+import java.io.File;
+
+import static org.junit.Assert.*;
 
 public class LinuxLatexPDFCompilerTest {
 
-	private static final String ASSUME_EXCEPTION_CONSTANS = "pdflatex -version";
-	private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
-	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
-	private static final String RESOURCES_PATH = "src" + FILE_SEPARATOR + "resources" + FILE_SEPARATOR + "compilePackages" + FILE_SEPARATOR;
-	private static File dirWithWrongFiles;
-	private static File dirWithGoodFiles;
-	private LinuxLatexPDFCompiler compiler;
-	
-	@Test
-	public void testCompile() throws SearchedFileNotExistsException, IOException {
-		assumeTrue("Ignore test, because can't run this operation system.", OS_NAME.contains(SupportedOperationSystems.LINUX.getStringValue()));
-		try {
-			Runtime.getRuntime().exec(ASSUME_EXCEPTION_CONSTANS);
-		} catch (Exception e) {
-			assumeNoException("Ignore test, because can't compile .tex files.", e);
-		}
-		compiler.compile(dirWithGoodFiles, dirWithGoodFiles);
-		File pdf = new File(dirWithGoodFiles.getAbsolutePath() + FILE_SEPARATOR + "main.pdf");
-		assertTrue(pdf.exists());
-	}
-	
-	@Test(expected = SearchedFileNotExistsException.class)
-	public void testCompile_CatchSearchedFileNotExistsException() throws SearchedFileNotExistsException, IOException {
-		assumeTrue("Ignore test, because can't run this operation system.", OS_NAME.contains(SupportedOperationSystems.LINUX.getStringValue()));
-		try {
-			Runtime.getRuntime().exec(ASSUME_EXCEPTION_CONSTANS);
-		} catch (Exception e) {
-			assumeNoException("Ignore test, because can't compile .tex files.", e);
-		}
-		LinuxLatexPDFCompiler mock = EasyMock.createMockBuilder(LinuxLatexPDFCompiler.class).addMockedMethod("commandForTerminal").createMock();
-		EasyMock.expect(mock.commandForTerminal(dirWithWrongFiles, dirWithGoodFiles)).andReturn("pdflatex " + "-output-directory=" + dirWithGoodFiles.getAbsolutePath() + " " + dirWithWrongFiles.getAbsolutePath() + FILE_SEPARATOR + "wrong.tex");
-		EasyMock.replay(mock);
-		mock.compile(dirWithWrongFiles, dirWithGoodFiles);
-	}
-	
-	@Test
-	public void testCommandForTerminal() throws SearchedFileNotExistsException {
-		File destinationDir = new File(RESOURCES_PATH + "desDir");
-		String command = compiler.commandForTerminal(dirWithGoodFiles, destinationDir);
-		File wantedFile = new File(dirWithGoodFiles.getAbsolutePath() + FILE_SEPARATOR + "main.tex");
-		assertTrue(command.contains(wantedFile.getAbsolutePath()));
-	}
-	
-	@Test(expected = SearchedFileNotExistsException.class)
-	public void testCommandForTerminal_WrongFileName() throws SearchedFileNotExistsException {
-		File destinationDir = new File(RESOURCES_PATH + "desDir");
-		compiler.commandForTerminal(dirWithWrongFiles, destinationDir);
-	}
-	
-	@Test(expected = SearchedFileNotExistsException.class)
-	public void testCommandForTerminal_WrongFileExtension() throws SearchedFileNotExistsException {
-		File destinationDir = new File(RESOURCES_PATH + "desDir");
-		compiler.commandForTerminal(dirWithWrongFiles, destinationDir);
-	}
-	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		dirWithWrongFiles = new File(RESOURCES_PATH + "dirWithWrongFiles");
-		dirWithGoodFiles = new File(RESOURCES_PATH + "dirWithGoodFiles");
-	}
-	
-	@Before
-	public void setUp() throws Exception {
-		compiler = new LinuxLatexPDFCompiler();
-	}
+    private Latex2PDFCompiler compiler;
 
-	@After
-	public void tearDown() throws Exception {
-		File[] files = dirWithGoodFiles.listFiles();
-		for(File file : files) {
-			String extesion = FilenameUtils.getExtension(file.getName());
-			if(extesion.equals(SupportedCompileableTextFileExtensions.TEX.getStringValue())) {
-				continue;
-			}
-			file.delete();
-		}
-	}
+    @Test
+    public void init() throws Exception {
+        boolean condition_1 = LinuxArgs.COMPILER.getArgument().equals(compiler.compilerArg);
+        boolean condition_2 = LinuxArgs.OUTPUT.getArgument().equals(compiler.outputDirArg);
+
+        assertTrue(condition_1 && condition_2);
+    }
+
+    @Test
+    public void command4Terminal() throws Exception {
+        File tesTexFile = new File("test.tex").getAbsoluteFile();
+        File testDirectory = new File("directory");
+        String command = compiler.command4Terminal(tesTexFile, testDirectory);
+
+        boolean condition_1 = command.contains(LinuxArgs.COMPILER.getArgument());
+        boolean condition_2 = command.contains(LinuxArgs.OUTPUT.getArgument());
+        boolean condition_3 = command.contains("test.tex");
+
+        assertTrue(condition_1 && condition_2 && condition_3);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        compiler = new LinuxLatexPDFCompiler();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        File testTexFile = new File("test.tex");
+        if(testTexFile.exists()) {
+            testTexFile.delete();
+        }
+    }
 }
