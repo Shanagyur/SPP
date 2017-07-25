@@ -58,33 +58,6 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		}
 	}
 
-	private StringBuilder patchTexFile(File directory, File texFile) throws IOException {
-		try {
-			StringBuilder builder = new StringBuilder();
-			BufferedReader reader = new BufferedReader(new FileReader(texFile));
-			String line = reader.readLine();
-			while(line != null) {
-				if(line.contains(LatexArgs.INPUT.getArgument())) {
-					builder.append(line).append(System.lineSeparator());
-					File wantedTexFile = findTexFile(directory, extractFileName(line));
-					builder.append(patchTexFile(directory, wantedTexFile));
-				}
-				builder.append(line).append(System.lineSeparator());
-				line = reader.readLine();
-			}
-
-			return builder;
-
-		} catch(IOException e) {
-			LOG.fatal("Catch IOException this message: " + e.getMessage() + System.lineSeparator() + "Throw new IOException with the same message.");
-			throw new IOException(e.getMessage());
-
-		} catch(SearchedFileNotExistsException e) {
-			LOG.fatal("Catch SearchedFileNotExistsException and throw IOException this message: " + e.getMessage());
-			throw new IOException(e.getMessage());
-		}
-	}
-
 	@Override
 	protected String extractTitle(File paper) throws IOException {
 		try {
@@ -251,6 +224,33 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 
 //remove latex commands if contains
 		return authors;
+	}
+
+	private StringBuilder patchTexFile(File directory, File texFile) throws IOException {
+		try {
+			StringBuilder builder = new StringBuilder();
+			BufferedReader reader = new BufferedReader(new FileReader(texFile));
+			String line = reader.readLine();
+			while(line != null) {
+				if(line.contains(LatexArgs.INPUT.getArgument())) {
+					builder.append(line).append(System.lineSeparator());
+					File wantedTexFile = findTexFile(directory, extractFileName(line));
+					builder.append(patchTexFile(directory, wantedTexFile));
+				}
+				builder.append(line).append(System.lineSeparator());
+				line = reader.readLine();
+			}
+
+			return builder;
+
+		} catch(IOException e) {
+			LOG.fatal("Catch IOException this message: " + e.getMessage() + System.lineSeparator() + "Throw new IOException with the same message.");
+			throw new IOException(e.getMessage());
+
+		} catch(SearchedFileNotExistsException e) {
+			LOG.fatal("Catch SearchedFileNotExistsException and throw IOException this message: " + e.getMessage());
+			throw new IOException(e.getMessage());
+		}
 	}
 
 	private boolean containsTexFile(File directory) {
