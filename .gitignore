@@ -6,8 +6,8 @@
 *.class
 
 # intellij specific git ignore
-.idea/**/*.xml
-.idea/**/*.iml
+.idea
+*.iml
 
 # eclipse specific git ignore
 *.pydevproject
@@ -30,4 +30,3 @@ local.properties
 
 # Locally stored "Eclipse launch configurations"
 *.launch
-!/spp-latex/src/resources/compilePackages/targetDir/
