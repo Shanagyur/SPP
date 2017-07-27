@@ -129,41 +129,28 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	@Override
 	protected List<String> extractKeywords(File paper) {
 		List keywords = new ArrayList<String>();
-		if(!completeTexFile.toString().contains(LatexArgs.START_KEYWORD.getArgument())) {
-			if(!completeTexFile.toString().contains(LatexArgs.KEYWORDS.getArgument())) {
+		if(!completeTexFile.toString().contains(LatexArgs.KEYWORDS.getArgument())) {
 
-				LOG.warn("ExtractKeywords method return with empty list.");
-				return keywords;
-			}
+			LOG.warn("ExtractKeywords method return with empty list.");
+			return keywords;
 		}
 
 		String[] SBLines = completeTexFile.toString().split(System.lineSeparator());
 		String keywordsLine = "";
-		int beginIndex = 0;
-		int lastIndex = 0;
-		for(int i = 0; i < SBLines.length; i++) {
-			if(SBLines[i].contains(LatexArgs.KEYWORDS.getArgument())) {
-				keywordsLine = SBLines[i];
-				break;
-			}
-			if(SBLines[i].contains(LatexArgs.START_KEYWORD.getArgument())) {
-				beginIndex = i;
-			}
-			if(SBLines[i].contains(LatexArgs.END_KEYWORD.getArgument())) {
-				lastIndex = i;
+		for(String line : SBLines) {
+			if(line.contains(LatexArgs.KEYWORDS.getArgument())) {
+				keywordsLine = line;
 				break;
 			}
 		}
-		String[] roughKeywords;
-		if(!keywordsLine.isEmpty()) {
-			roughKeywords = keywordsLine.split(",");
+		if(!keywordsLine.contains(",")) {
+			String roughKeywords = keywordsLine;
+			keywords.add(roughKeywords);
+		}
+		else {
+			String[] roughKeywords = keywordsLine.split(",");
 			keywords = Arrays.asList(roughKeywords);
 		}
-		if(beginIndex != lastIndex) {
-			roughKeywords = Arrays.copyOfRange(SBLines, beginIndex + 1, lastIndex);
-			keywords = Arrays.asList(roughKeywords);
-		}
-
 //remove latex commands if contains
 		return keywords;
 	}
@@ -178,50 +165,102 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		}
 		String[] SBLines = completeTexFile.toString().split(System.lineSeparator());
 
-
-		Map<String, String> nameWithPointer = new HashMap<>();
-		Map<String, String> nameWithEMail = new HashMap<>();
-		Map<String, String> pointerWithAffiliation = new HashMap<>();
+		int counter = 0;
+		boolean moreAuthor = false;
 		for(String line : SBLines) {
 			if(line.contains(LatexArgs.AUTHOR.getArgument())) {
-				int beginIndex = line.indexOf("[");
-				int lastIndex = line.indexOf("]");
-				String pointer = line.substring(beginIndex + 1, lastIndex);
-
-				beginIndex = line.indexOf("{");
-				lastIndex = line.indexOf("}");
-				String name = line.substring(beginIndex + 1, lastIndex);
-				nameWithPointer.put(name, pointer);
-
-				if(line.contains(LatexArgs.EAD_COMMAND.getArgument())) {
-					beginIndex = line.indexOf(LatexArgs.EAD_COMMAND.getArgument());
+				counter++;
+				if(counter == 2) {
+					moreAuthor = true;
+					break;
 				}
-				if(line.contains(LatexArgs.HREF_COMMAND.getArgument())) {
-					beginIndex = line.indexOf(LatexArgs.HREF_COMMAND.getArgument());
-				}
-				String email = line.substring(line.indexOf("{", beginIndex) + 1, line.indexOf("}", beginIndex));
-				nameWithEMail.put(name, email);
-			}
-			if(line.contains(LatexArgs.AFFILIATION.getArgument())) {
-				int beginIndex = line.indexOf("[");
-				int lastIndex = line.indexOf("]");
-				String pointer = line.substring(beginIndex + 1, lastIndex);
-
-				beginIndex = line.indexOf("{");
-				lastIndex = line.indexOf("}");
-				String affiliation = line.substring(beginIndex + 1, lastIndex);
-
-				pointerWithAffiliation.put(pointer, affiliation);
 			}
 		}
-		for(String key : nameWithEMail.keySet()) {
-			String name = key;
-			String email = nameWithEMail.get(key);
-			String affiliation = pointerWithAffiliation.get(nameWithPointer.get(key));
-			Author author = new Author(name, email, affiliation);
+		Map<String, String> nameWithPointer = new HashMap<>();
+		Map<String, String> nameWithEmail = new HashMap<>();
+		Map<String, String> pointerWithAffiliation = new HashMap<>();
+		if(moreAuthor) {
+			for(String line : SBLines) {
+				if(line.contains(LatexArgs.AUTHOR.getArgument())) {
+					int beginIndex = line.indexOf("[");
+					int endIndex = line.indexOf("]");
+					String pointer = line.substring(beginIndex + 1, endIndex);
+
+					beginIndex = line.indexOf(LatexArgs.HREF.getArgument());
+					endIndex = line.lastIndexOf("}");
+					String nameAndEmail = line.substring(beginIndex + 1, endIndex);
+
+					beginIndex = nameAndEmail.indexOf("{");
+					endIndex = nameAndEmail.indexOf("}");
+					String email = nameAndEmail.substring(beginIndex + 1, endIndex);
+
+					beginIndex = nameAndEmail.length() - (email.length() + 2);
+					endIndex = nameAndEmail.lastIndexOf("}");
+					String name = nameAndEmail.substring(beginIndex +1, endIndex);
+
+					nameWithPointer.put(name, pointer);
+					nameWithEmail.put(name, email);
+				}
+				if(line.contains(LatexArgs.AFFILIATION.getArgument())) {
+					int beginIndex = line.indexOf("[");
+					int endIndex = line.indexOf("]");
+					String pointer = line.substring(beginIndex + 1, endIndex);
+
+					beginIndex = line.indexOf("{");
+					endIndex = line.indexOf("}");
+					String affiliation = line.substring(beginIndex + 1, endIndex);
+
+					pointerWithAffiliation.put(pointer, affiliation);
+				}
+			}
+			for(String key : nameWithEmail.keySet()) {
+				String name = key;
+				String email = nameWithEmail.get(key);
+				String affiliation = pointerWithAffiliation.get(nameWithPointer.get(key));
+				Author author = new Author(name, email, affiliation);
+				authors.add(author);
+			}
+		}
+		else {
+			Author author = new Author("","","");
+			for(String line : SBLines) {
+				if(line.contains(LatexArgs.AUTHOR.getArgument())) {
+					int beginIndex = line.indexOf(LatexArgs.HREF.getArgument());
+					int endIndex = line.lastIndexOf("}");
+					String nameAndEmail = line.substring(beginIndex + 5, endIndex);
+
+					beginIndex = nameAndEmail.indexOf("{");
+					endIndex = nameAndEmail.indexOf("}");
+					String email = nameAndEmail.substring(beginIndex + 1, endIndex);
+					author.setEmail(email);
+
+					beginIndex = nameAndEmail.length() - (email.length() + 2);
+					endIndex = nameAndEmail.lastIndexOf("}");
+/*					____________________________________________________
+
+					beginIndex = nameAndEmail.indexOf(email);
+					endIndex = nameAndEmail.lastIndexOf("}");
+
+					String asd = nameAndEmail.substring(beginIndex + 1, endIndex);
+					System.out.println(asd);
+					beginIndex = asd.indexOf("{");
+					endIndex = asd.lastIndexOf("}");
+
+					String name = asd.substring(beginIndex +1, endIndex);
+
+					__________________________________________________
+*/					String name = nameAndEmail.substring(beginIndex +1, endIndex);
+					author.setName(name);
+				}
+				if(line.contains(LatexArgs.AFFILIATION.getArgument())) {
+					int beginIndex = line.indexOf("{");
+					int endIndex = line.indexOf("}");
+					String affiliation = line.substring(beginIndex + 1, endIndex);
+					author.setAffiliation(affiliation);
+				}
+			}
 			authors.add(author);
 		}
-
 //remove latex commands if contains
 		return authors;
 	}
@@ -314,7 +353,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private File initDestinationDir(File rootFile) throws IOException {
 		File directory = new File(rootFile.getParentFile().getParentFile().getAbsolutePath() + FILE_SEPARATOR + DEST_DIR_NAME);
 		if(!directory.exists()) {
-			if(directory.mkdir()) {
+			if(!directory.mkdir()) {
 				LOG.fatal("Throw IOException this message: Could not create directory: " + directory.getAbsolutePath());
 				throw new IOException("Could not create directory: " + directory.getAbsolutePath());
 			}
