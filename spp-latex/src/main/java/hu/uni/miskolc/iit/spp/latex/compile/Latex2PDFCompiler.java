@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableTextFileExtensions;
+import hu.uni.miskolc.iit.spp.core.model.SupportedGeneratedFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -50,13 +51,13 @@ public abstract class Latex2PDFCompiler {
 				if(file.isDirectory()) {
 					return findPDFFile(file, fileName);
 				}
-				if(isSameName(file, fileName) && isTexFile(file)) {
+				if(isSameName(file, fileName) && isPDFFile(file)) {
 					return file;
 				}
 			}
 		}
-		LOG.fatal("Throw SearchedFileNotExistsException this message: Could not find .tex file with this name: " + fileName);
-		throw new SearchedFileNotExistsException("Could not find .tex file with this name: " + fileName);
+		LOG.fatal("Throw SearchedFileNotExistsException this message: Could not find .pdf file with this name: " + fileName);
+		throw new SearchedFileNotExistsException("Could not find .pdf file with this name: " + fileName);
 	}
 
 	private boolean isSameName(File file, String name) {
@@ -65,9 +66,9 @@ public abstract class Latex2PDFCompiler {
 		return fileName.equals(name);
 	}
 
-	private boolean isTexFile(File file) {
+	private boolean isPDFFile(File file) {
 		String fileExtension = FilenameUtils.getExtension(file.getName());
 
-		return fileExtension.equals(SupportedCompileableTextFileExtensions.TEX.getStringValue());
+		return fileExtension.equals(SupportedGeneratedFileExtensions.PDF.getStringValue());
 	}
 }
