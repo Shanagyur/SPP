@@ -5,16 +5,10 @@ public enum LatexArgs {
     TITLE("\\title{"),
     START_ABSTRACT("\\begin{abstract}"),
     END_ABSTRACT("\\end{abstract}"),
-    START_KEYWORD("\\begin{keyword"),
-    END_KEYWORD("\\end{keyword"),
     KEYWORDS("\\keywords{"),
     AUTHOR("\\author"),
-    EAD_COMMAND("\\ead"),
-    HREF_COMMAND("\\href"),
-    AFFILIATION("\\affil"),
-    DOC_CLASS("\\documentclass[10pt,a4paper]{letter}"),
-    START_DOCUMENT("\\begin{document}"),
-    END_DOCUMENT("\\end{document}");
+    HREF("\\href"),
+    AFFILIATION("\\affil");
 
     private String argument;
 
