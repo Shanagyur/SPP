@@ -188,15 +188,21 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 
 					beginIndex = line.indexOf(LatexArgs.HREF.getArgument());
 					endIndex = line.lastIndexOf("}");
-					String nameAndEmail = line.substring(beginIndex + 1, endIndex);
+					String emailAndName = line.substring(beginIndex + 5, endIndex);
 
-					beginIndex = nameAndEmail.indexOf("{");
-					endIndex = nameAndEmail.indexOf("}");
-					String email = nameAndEmail.substring(beginIndex + 1, endIndex);
+					beginIndex = emailAndName.indexOf("{");
+					endIndex = emailAndName.indexOf("}");
+					String email = emailAndName.substring(beginIndex + 1, endIndex);
 
-					beginIndex = nameAndEmail.length() - (email.length() + 2);
-					endIndex = nameAndEmail.lastIndexOf("}");
-					String name = nameAndEmail.substring(beginIndex +1, endIndex);
+					for(int i = emailAndName.lastIndexOf("}"); i > 0; i--) {
+						Character character = emailAndName.charAt(i);
+						if(character.toString().equals("{")) {
+							beginIndex = i;
+							break;
+						}
+					}
+					endIndex = emailAndName.lastIndexOf("}");
+					String name = emailAndName.substring(beginIndex +1, endIndex);
 
 					nameWithPointer.put(name, pointer);
 					nameWithEmail.put(name, email);
@@ -227,29 +233,22 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 				if(line.contains(LatexArgs.AUTHOR.getArgument())) {
 					int beginIndex = line.indexOf(LatexArgs.HREF.getArgument());
 					int endIndex = line.lastIndexOf("}");
-					String nameAndEmail = line.substring(beginIndex + 5, endIndex);
+					String emailAndName = line.substring(beginIndex + 5, endIndex);
 
-					beginIndex = nameAndEmail.indexOf("{");
-					endIndex = nameAndEmail.indexOf("}");
-					String email = nameAndEmail.substring(beginIndex + 1, endIndex);
+					beginIndex = emailAndName.indexOf("{");
+					endIndex = emailAndName.indexOf("}");
+					String email = emailAndName.substring(beginIndex + 1, endIndex);
 					author.setEmail(email);
 
-					beginIndex = nameAndEmail.length() - (email.length() + 2);
-					endIndex = nameAndEmail.lastIndexOf("}");
-/*					____________________________________________________
-
-					beginIndex = nameAndEmail.indexOf(email);
-					endIndex = nameAndEmail.lastIndexOf("}");
-
-					String asd = nameAndEmail.substring(beginIndex + 1, endIndex);
-					System.out.println(asd);
-					beginIndex = asd.indexOf("{");
-					endIndex = asd.lastIndexOf("}");
-
-					String name = asd.substring(beginIndex +1, endIndex);
-
-					__________________________________________________
-*/					String name = nameAndEmail.substring(beginIndex +1, endIndex);
+					for(int i = emailAndName.lastIndexOf("}"); i > 0; i--) {
+						Character character = emailAndName.charAt(i);
+						if(character.toString().equals("{")) {
+							beginIndex = i;
+							break;
+						}
+					}
+					endIndex = emailAndName.lastIndexOf("}");
+					String name = emailAndName.substring(beginIndex + 1, endIndex);
 					author.setName(name);
 				}
 				if(line.contains(LatexArgs.AFFILIATION.getArgument())) {
@@ -257,6 +256,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 					int endIndex = line.indexOf("}");
 					String affiliation = line.substring(beginIndex + 1, endIndex);
 					author.setAffiliation(affiliation);
+					break;
 				}
 			}
 			authors.add(author);
