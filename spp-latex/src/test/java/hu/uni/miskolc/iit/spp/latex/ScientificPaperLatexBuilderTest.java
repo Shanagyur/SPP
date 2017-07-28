@@ -211,10 +211,10 @@ public class ScientificPaperLatexBuilderTest {
         mockBuilder.extractTitle(dirOneAuthorAndKeyword);
         List<String> actualKeywords = mockBuilder.extractKeywords(dirOneAuthorAndKeyword);
 
-        boolean condition_1 = actualKeywords.size() == 1;
-        boolean condition_2 = actualKeywords.toString().contains("keyword1");
+        boolean conditionSize = actualKeywords.size() == 1;
+        boolean condition = actualKeywords.toString().contains("keyword1");
 
-        assertTrue(condition_1 && condition_2);
+        assertTrue(conditionSize && condition);
     }
 
     @Test
@@ -222,11 +222,12 @@ public class ScientificPaperLatexBuilderTest {
         mockBuilder.extractTitle(dirMoreAuthorsAndKeyword);
         List<String> keywords = mockBuilder.extractKeywords(dirMoreAuthorsAndKeyword);
 
+        boolean conditionSize = keywords.size() == 3;
         boolean condition_1 = keywords.get(0).toString().contains("keyword1");
         boolean condition_2 = keywords.get(1).toString().contains("keyword2");
         boolean condition_3 = keywords.get(2).toString().contains("keyword3");
 
-        assertTrue(condition_1 && condition_2 && condition_3);
+        assertTrue(conditionSize && condition_1 && condition_2 && condition_3);
     }
 
     @Test
@@ -238,22 +239,18 @@ public class ScientificPaperLatexBuilderTest {
     }
 
     @Test
-    @Ignore
     public void extractAuthors_OneAuthor() throws IOException {
         mockBuilder.extractTitle(dirOneAuthorAndKeyword);
         List<Author> actualAuthors = mockBuilder.extractAuthors(dirOneAuthorAndKeyword);
 
-        System.out.println(actualAuthors);
-
         Author expectedAuthor = new Author("John Smith", "john.s@mail.com", "University of Mordor, Middle-earth");
-        boolean condition_1 = actualAuthors.size() == 1;
-        boolean condition_2 = actualAuthors.contains(expectedAuthor);
+        boolean conditionSize = actualAuthors.size() == 1;
+        boolean condition = actualAuthors.get(0).toString().equals(expectedAuthor.toString());
 
-        assertTrue(condition_1 && condition_2);
+        assertTrue(conditionSize && condition);
     }
 
     @Test
-    @Ignore
     public void extractAuthors_MoreAuthor() throws IOException {
         mockBuilder.extractTitle(dirMoreAuthorsAndKeyword);
         List<Author> actualAuthors = mockBuilder.extractAuthors(dirMoreAuthorsAndKeyword);
@@ -262,11 +259,11 @@ public class ScientificPaperLatexBuilderTest {
         expectedAuthors.add(new Author("Jean Smith", "jean.s@mail.com", "University of Gondor, Middle-earth"));
         expectedAuthors.add(new Author("Jane Smith", "jane.s@mail.com", "University of Gondor, Middle-earth"));
         expectedAuthors.add(new Author("John Smith", "john.s@mail.com", "University of Mordor, Middle-earth"));
-        boolean[] condition = new boolean[actualAuthors.size()];
-        for(int i = 0; i < actualAuthors.size(); i++) {
-            condition[i] = expectedAuthors.get(i).toString().equals(actualAuthors.get(i).toString());
-        }
+        boolean conditionSize = actualAuthors.size() == 3;
+        boolean condition_1 = expectedAuthors.contains(actualAuthors.get(0));
+        boolean condition_2 = expectedAuthors.contains(actualAuthors.get(1));
+        boolean condition_3 = expectedAuthors.contains(actualAuthors.get(2));
 
-        assertTrue(condition[0] && condition[1] && condition[2]);
+        assertTrue(conditionSize && condition_1 && condition_2 && condition_3);
     }
 }
