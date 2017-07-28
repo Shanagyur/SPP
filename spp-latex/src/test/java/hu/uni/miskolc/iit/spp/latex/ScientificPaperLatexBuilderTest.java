@@ -4,9 +4,7 @@ import hu.uni.miskolc.iit.spp.core.model.Author;
 import hu.uni.miskolc.iit.spp.core.model.UsedDirectoryNames;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
-import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedOperationSystemException;
 import hu.uni.miskolc.iit.spp.latex.compile.Latex2PDFCompiler;
-import hu.uni.miskolc.iit.spp.latex.compile.LatexCompilerFactory;
 import org.easymock.EasyMock;
 import org.junit.*;
 
@@ -16,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assume.*;
 
 public class ScientificPaperLatexBuilderTest {
 
@@ -28,7 +25,6 @@ public class ScientificPaperLatexBuilderTest {
     private static File dirOneAuthorAndKeyword;
     private static File dirMoreAuthorsAndKeyword;
 
-    private ScientificPaperLatexBuilder builder;
     private ScientificPaperLatexBuilder mockBuilder;
 
     @BeforeClass
@@ -98,14 +94,13 @@ public class ScientificPaperLatexBuilderTest {
     @Test
     public void generatePDF_InitMoreDestinationDir() throws IOException, ConversionToPDFException {
         File texFile = new File(dirGoodFile.getPath() + FILE_SEPARATOR + "main.tex");
+        File destDir = new File(new File(SOURCE_DIR).getParentFile().getAbsolutePath() + FILE_SEPARATOR + UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue() + FILE_SEPARATOR + "version_0");
 
         Latex2PDFCompiler mockCompiler_0 = EasyMock.mock(Latex2PDFCompiler.class);
-        File destDir_0 = new File(new File(SOURCE_DIR).getParentFile().getAbsolutePath() + FILE_SEPARATOR + UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue() + FILE_SEPARATOR + "version_0");
-        EasyMock.expect(mockCompiler_0.generatePDFFile(texFile, destDir_0)).andReturn(new File("main.pdf"));
+        EasyMock.expect(mockCompiler_0.generatePDFFile(texFile, destDir)).andReturn(new File("main.pdf"));
 
         Latex2PDFCompiler mockCompiler_1 = EasyMock.mock(Latex2PDFCompiler.class);
-        File destDir_1 = new File(new File(SOURCE_DIR).getParentFile().getAbsolutePath() + FILE_SEPARATOR + UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue() + FILE_SEPARATOR + "version_1");
-        EasyMock.expect(mockCompiler_1.generatePDFFile(texFile, destDir_0)).andReturn(new File("main.pdf"));
+        EasyMock.expect(mockCompiler_1.generatePDFFile(texFile, destDir)).andReturn(new File("main.pdf"));
 
         mockBuilder = new ScientificPaperLatexBuilder(mockCompiler_0);
         mockBuilder.generatePDF(dirGoodFile);
@@ -137,28 +132,6 @@ public class ScientificPaperLatexBuilderTest {
     @Test(expected = ConversionToPDFException.class)
     public void generatePDF_FindTexFile_ThrowException() throws IOException, ConversionToPDFException {
         mockBuilder.generatePDF(dirWrongFile);
-    }
-
-    @Test
-    public void generatePDF() throws ConversionToPDFException {
-        try {
-            LatexCompilerFactory factory = new LatexCompilerFactory(System.getProperty("os.name"));
-            Latex2PDFCompiler compiler = factory.createLatexPDFCompiler();
-            Runtime.getRuntime().exec("pdflatex -version");
-
-            builder = new ScientificPaperLatexBuilder(compiler);
-
-            File actualPDF = builder.generatePDF(dirGoodFile);
-            File expectedPDF = new File(new File(SOURCE_DIR).getParentFile().getAbsolutePath() + FILE_SEPARATOR + UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue() + FILE_SEPARATOR + "version_0" + FILE_SEPARATOR + "main.pdf");
-
-            assertEquals(expectedPDF, actualPDF);
-
-        } catch(NotSupportedOperationSystemException e) {
-            assumeNoException("Ignore test, because can't run this operation system.", e);
-
-        } catch (IOException e) {
-            assumeNoException("Ignore test, because can't compile .tex files.", e);
-        }
     }
 
     @Test(expected = IOException.class)
