@@ -37,6 +37,26 @@ public class Author {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Author author = (Author) o;
+
+		if (!name.equals(author.name)) return false;
+		if (!email.equals(author.email)) return false;
+		return affiliation.equals(author.affiliation);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = name.hashCode();
+		result = 31 * result + email.hashCode();
+		result = 31 * result + affiliation.hashCode();
+		return result;
+	}
+
+	@Override
 	public String toString() {
 		return "Author [name=" + name + ", email=" + email + ", affiliation=" + affiliation + "]";
 	}
