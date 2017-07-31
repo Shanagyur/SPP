@@ -3,7 +3,6 @@ package hu.uni.miskolc.iit.spp.latex;
 import java.io.*;
 import java.util.*;
 
-import com.sun.org.apache.xerces.internal.xs.StringList;
 import hu.uni.miskolc.iit.spp.core.model.Author;
 import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableTextFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.SupportedFileNames;

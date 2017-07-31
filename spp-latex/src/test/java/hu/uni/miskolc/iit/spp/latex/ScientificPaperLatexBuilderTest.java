@@ -232,6 +232,7 @@ public class ScientificPaperLatexBuilderTest {
         expectedAuthors.add(new Author("Jean Smith", "jean.s@mail.com", "University of Gondor, Middle-earth"));
         expectedAuthors.add(new Author("Jane Smith", "jane.s@mail.com", "University of Gondor, Middle-earth"));
         expectedAuthors.add(new Author("John Smith", "john.s@mail.com", "University of Mordor, Middle-earth"));
+
         boolean conditionSize = actualAuthors.size() == 3;
         boolean condition_1 = expectedAuthors.contains(actualAuthors.get(0));
         boolean condition_2 = expectedAuthors.contains(actualAuthors.get(1));

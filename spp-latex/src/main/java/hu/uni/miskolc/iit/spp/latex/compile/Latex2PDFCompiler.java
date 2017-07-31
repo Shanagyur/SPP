@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableTextFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.SupportedGeneratedFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
 import org.apache.commons.io.FilenameUtils;
