@@ -16,9 +16,8 @@ public abstract class ArchiveScientificPaperBuilder implements ScientificPaperBu
 
     private static Logger LOG = LogManager.getLogger(ArchiveScientificPaperBuilder.class);
     private ScientificPaperBuilder builder;
-    private ArchiveScientificPaperBuilder archiveBuilder;
 
-    public ArchiveScientificPaperBuilder(ScientificPaperBuilder builder) {
+    protected ArchiveScientificPaperBuilder(ScientificPaperBuilder builder) {
         this.builder = builder;
     }
 
@@ -28,7 +27,7 @@ public abstract class ArchiveScientificPaperBuilder implements ScientificPaperBu
     }
 
     @Override
-    public ScientificPaper build(File paper) throws NoMainDocumentFoundException, IOException, ConversionToPDFException {
+    public ScientificPaper build(File paper) throws NoMainDocumentFoundException, ConversionToPDFException, IOException {
         if(!isSupportedArchive(paper)) {
             LOG.fatal("Throw IOException this message:  Not supported compression format.");
             throw new IOException("Not supported compression format.");
