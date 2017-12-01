@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 
 import hu.uni.miskolc.iit.spp.core.model.SupportedGeneratedFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class Latex2PDFCompiler {
 
 	private static Logger LOG = LogManager.getLogger(Latex2PDFCompiler.class);
+	
 	protected String compilerArg;
 	protected String outputDirArg;
 
@@ -48,9 +50,11 @@ public abstract class Latex2PDFCompiler {
 		if(dirFiles != null && dirFiles.length > 0) {
 			for(File file : dirFiles) {
 				if(file.isDirectory()) {
+					
 					return findPDFFile(file, fileName);
 				}
 				if(isSameName(file, fileName) && isPDFFile(file)) {
+					
 					return file;
 				}
 			}

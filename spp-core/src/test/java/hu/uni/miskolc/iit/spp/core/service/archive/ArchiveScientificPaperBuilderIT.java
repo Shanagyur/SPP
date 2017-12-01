@@ -4,8 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public abstract class ArchiveScientificPaperBuilderIT {
 
     @Before
@@ -23,5 +21,4 @@ public abstract class ArchiveScientificPaperBuilderIT {
     @Test
     public void build1() throws Exception {
     }
-
 }

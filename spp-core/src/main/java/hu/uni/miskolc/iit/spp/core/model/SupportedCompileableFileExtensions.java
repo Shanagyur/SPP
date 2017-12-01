@@ -1,11 +1,13 @@
 package hu.uni.miskolc.iit.spp.core.model;
 
-public enum SupportedCompileableTextFileExtensions {
-	TEX("tex");
+public enum SupportedCompileableFileExtensions {
+	TEX("tex"),
+	DOC("doc"),
+	DOCX("docx");
 	
 	private String stringValue;
 
-	private SupportedCompileableTextFileExtensions(String stringValue) {
+	private SupportedCompileableFileExtensions(String stringValue) {
 		this.stringValue = stringValue;
 	}
 

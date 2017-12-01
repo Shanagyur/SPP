@@ -4,8 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class ZipArchiveSPBuilderIT extends ArchiveScientificPaperBuilderIT {
 
     @Before
@@ -19,5 +17,4 @@ public class ZipArchiveSPBuilderIT extends ArchiveScientificPaperBuilderIT {
     @Test
     public void extract() throws Exception {
     }
-
 }

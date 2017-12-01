@@ -2,11 +2,14 @@ package hu.uni.miskolc.iit.spp.latex.compile;
 
 import hu.uni.miskolc.iit.spp.core.model.SupportedOperationSystems;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedOperationSystemException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LatexCompilerFactory {
+	
 	private static Logger LOG = LogManager.getLogger(LatexCompilerFactory.class);
+	
 	private String osName;
 
 	public LatexCompilerFactory(String osName) {
@@ -16,9 +19,11 @@ public class LatexCompilerFactory {
 	public Latex2PDFCompiler createLatexPDFCompiler() throws NotSupportedOperationSystemException {
 		if(isSupportedOS()) {
 			if(isLinux()) {
+				
 				return new LinuxLatexPDFCompiler();
 			}
 			if(isWindows()) {
+				
 				return new WindowsLatexPDFCompiler();
 			}
 		}
@@ -29,9 +34,11 @@ public class LatexCompilerFactory {
 	private boolean isSupportedOS() {
 		for(SupportedOperationSystems system : SupportedOperationSystems.values()) {
 			if(osName.toLowerCase().contains(system.getStringValue())) {
+				
 				return true;
 			}
 		}
+		
 		return false;
 	}
 

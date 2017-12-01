@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import hu.uni.miskolc.iit.spp.core.model.Author;
-import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableTextFileExtensions;
+import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.SupportedFileNames;
 import hu.uni.miskolc.iit.spp.core.model.UsedDirectoryNames;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
@@ -12,6 +12,7 @@ import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
 import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
 import hu.uni.miskolc.iit.spp.core.service.AbstractScientificPaperBuilder;
 import hu.uni.miskolc.iit.spp.latex.compile.Latex2PDFCompiler;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,17 +22,18 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 	private static final String DEST_DIR_NAME = UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue();
 	private static final String SUB_DIR_NAME = "version_";
+	
 	private static Logger LOG = LogManager.getLogger(ScientificPaperLatexBuilder.class);
+	
 	private Latex2PDFCompiler compiler;
 	private StringBuilder completeTexFile;
-	private File destinationDir;
 
 	public ScientificPaperLatexBuilder(Latex2PDFCompiler compiler) {
 		this.compiler = compiler;
 	}
 
 	@Override
-	protected void checkFileExtension(File paper) throws NoMainDocumentFoundException, IOException {
+	protected void checkFileExtension(File paper) throws NoMainDocumentFoundException {
 		if(!containsTexFile(paper)) {
 			LOG.fatal("Throw NoMainDocumentFoundException this message: Could not find main.tex or paper.tex file this directory: " + paper.getAbsolutePath());
 			throw new NoMainDocumentFoundException("Could not find main.tex or paper.tex file this directory: " + paper.getAbsolutePath());
@@ -41,7 +43,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	@Override
 	protected File generatePDF(File paper) throws ConversionToPDFException {
 		try {
-			destinationDir = initDestinationDir(paper);
+			File destinationDir = initDestinationDir(paper);
 			File mainTexFile = findTexFile(paper, SupportedFileNames.getStringValues());
 			File pdfFile = this.compiler.generatePDFFile(mainTexFile, destinationDir);
 
@@ -68,14 +70,14 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 			throw new IOException(e.getMessage());
 
 		} catch(IOException e) {
-			LOG.fatal("Catch IOException this message: " + e.getMessage() + System.lineSeparator() + "And trow IOexception with the same message.");
+			LOG.fatal("Catch IOException this message: " + e.getMessage() + System.lineSeparator() + "And throw IOexception with the same message.");
 			throw new IOException(e.getMessage());
 		}
 
 		String title = "";
 		if(!completeTexFile.toString().contains(LatexArgs.TITLE.getArgument())) {
-
 			LOG.warn("ExtractTitle method return with empty string.");
+			
 			return title;
 		}
 
@@ -90,7 +92,6 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 			}
 		}
 
-//remove latex commands if contains
 		return title;
 	}
 
@@ -98,8 +99,8 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	protected String extractAbstract(File paper) {
 		String resume = "";
 		if(!completeTexFile.toString().contains(LatexArgs.START_ABSTRACT.getArgument())) {
-
 			LOG.warn("ExtractAbstract method return with empty string.");
+			
 			return resume;
 		}
 
@@ -121,16 +122,15 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		}
 		String roughResume = builder.toString();
 
-//remove latex commands if contains
 		return resume = roughResume;
 	}
 
 	@Override
 	protected List<String> extractKeywords(File paper) {
-		List keywords = new ArrayList<String>();
+		List<String> keywords = new ArrayList<String>();
 		if(!completeTexFile.toString().contains(LatexArgs.KEYWORDS.getArgument())) {
-
 			LOG.warn("ExtractKeywords method return with empty list.");
+
 			return keywords;
 		}
 
@@ -150,16 +150,16 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 			String[] roughKeywords = keywordsLine.split(",");
 			keywords = Arrays.asList(roughKeywords);
 		}
-//remove latex commands if contains
+		
 		return keywords;
 	}
 
 	@Override
 	protected List<Author> extractAuthors(File paper) {
-		List authors = new ArrayList<Author>();
+		List<Author> authors = new ArrayList<Author>();
 		if(!completeTexFile.toString().contains(LatexArgs.AUTHOR.getArgument())) {
-
 			LOG.warn("ExtractAuthors method return with empty list.");
+
 			return authors;
 		}
 		String[] SBLines = completeTexFile.toString().split(System.lineSeparator());
@@ -260,7 +260,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 			}
 			authors.add(author);
 		}
-//remove latex commands if contains
+
 		return authors;
 	}
 
@@ -294,10 +294,12 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	private boolean containsTexFile(File directory) {
 		try {
 			findTexFile(directory, SupportedFileNames.getStringValues());
+			
 			return true;
 
 		} catch (SearchedFileNotExistsException e) {
 			LOG.fatal("Catch SearchedFileNotExistsException and return with false.");
+			
 			return false;
 		}
 	}
@@ -323,9 +325,11 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		if(dirFiles != null && dirFiles.length > 0) {
 			for(File file : dirFiles) {
 				if(file.isDirectory()) {
+					
 					return findTexFile(file, names);
 				}
 				if(isSearchedName(file, names) && isTexFile(file)) {
+					
 					return file;
 				}
 			}
@@ -338,15 +342,18 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		String fileName = FilenameUtils.getBaseName(file.getName()).toLowerCase();
 		for(String name : names) {
 			if(fileName.equals(name)) {
+				
 				return true;
 			}
 		}
+		
 		return false;
 	}
 
 	private boolean isTexFile(File file) {
 		String fileExtension = FilenameUtils.getExtension(file.getName());
-		return fileExtension.equals(SupportedCompileableTextFileExtensions.TEX.getStringValue());
+		
+		return fileExtension.equals(SupportedCompileableFileExtensions.TEX.getStringValue());
 	}
 
 	private File initDestinationDir(File rootFile) throws IOException {

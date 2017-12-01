@@ -16,6 +16,7 @@ public class WindowsLatexPDFCompilerIT extends Latex2PDFCompilerIT {
     @Before
     public void setUp() throws NotSupportedOperationSystemException {
         super.setUp();
+        
         assumeTrue("Ignore test, because can't run this operation system.", compiler.getClass().equals(WindowsLatexPDFCompiler.class));
     }
 

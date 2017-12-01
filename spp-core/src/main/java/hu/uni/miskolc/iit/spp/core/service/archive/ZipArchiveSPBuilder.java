@@ -15,6 +15,7 @@ public class ZipArchiveSPBuilder extends ArchiveScientificPaperBuilder {
     private static final String FILE_SEPARATOR = System.getProperty("file.separator");
     private static final String DEST_DIR_NAME = UsedDirectoryNames.DIR_FOR_EXTRACT_FILES.getStringValue();
     private static final String SUB_DIR_NAME = "version_";
+    
     private static Logger LOG = LogManager.getLogger(ZipException.class);
 
     public ZipArchiveSPBuilder(ScientificPaperBuilder builder) {
@@ -31,7 +32,7 @@ public class ZipArchiveSPBuilder extends ArchiveScientificPaperBuilder {
             return extractedArchiveDir;
 
         } catch (ZipException e) {
-            LOG.fatal("Catch ZipException this message: " + e.getMessage() + System.lineSeparator() + "And throw IOException with the same message.");
+            LOG.fatal("Catch ZipException this message and throw IOException with the same message. " + System.lineSeparator() + e.getMessage());
             throw new IOException(e.getMessage());
         }
     }

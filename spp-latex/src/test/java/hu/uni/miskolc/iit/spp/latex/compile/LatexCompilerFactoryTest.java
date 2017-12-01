@@ -21,6 +21,7 @@ public class LatexCompilerFactoryTest {
 	public void testCreateLatexPDFCompiler_LinuxCompiler() throws NotSupportedOperationSystemException {
 		factory = new LatexCompilerFactory("LInUX_nextGen");
 		compiler = factory.createLatexPDFCompiler();
+		
 		assertEquals(LinuxLatexPDFCompiler.class, compiler.getClass());
 	}
 	
@@ -28,6 +29,7 @@ public class LatexCompilerFactoryTest {
 	public void testCreateLatexPDFCompiler_WindowsCompiler() throws NotSupportedOperationSystemException {
 		factory = new LatexCompilerFactory("WINdows15_for_Students");
 		compiler = factory.createLatexPDFCompiler();
+		
 		assertEquals(WindowsLatexPDFCompiler.class, compiler.getClass());
 	}
 }

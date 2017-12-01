@@ -4,7 +4,9 @@ import hu.uni.miskolc.iit.spp.core.model.ScientificPaper;
 import hu.uni.miskolc.iit.spp.core.model.SupportedArchiveExtensions;
 import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
+import hu.uni.miskolc.iit.spp.core.model.exception.UseableBuilderNotExistingException;
 import hu.uni.miskolc.iit.spp.core.service.ScientificPaperBuilder;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +16,8 @@ import java.io.IOException;
 
 public abstract class ArchiveScientificPaperBuilder implements ScientificPaperBuilder {
 
-    private static Logger LOG = LogManager.getLogger(ArchiveScientificPaperBuilder.class);
+	private static Logger LOG = LogManager.getLogger(ArchiveScientificPaperBuilder.class);
+    
     private ScientificPaperBuilder builder;
 
     protected ArchiveScientificPaperBuilder(ScientificPaperBuilder builder) {
@@ -22,17 +25,18 @@ public abstract class ArchiveScientificPaperBuilder implements ScientificPaperBu
     }
 
     @Override
-    public ScientificPaper build(String sourceFilePath) throws NoMainDocumentFoundException, ConversionToPDFException, IOException {
+    public ScientificPaper build(String sourceFilePath) throws NoMainDocumentFoundException, ConversionToPDFException, IOException, UseableBuilderNotExistingException {
         return this.build(new File(sourceFilePath));
     }
 
     @Override
-    public ScientificPaper build(File paper) throws NoMainDocumentFoundException, ConversionToPDFException, IOException {
+    public ScientificPaper build(File paper) throws NoMainDocumentFoundException, ConversionToPDFException, IOException, UseableBuilderNotExistingException {
         if(!isSupportedArchive(paper)) {
             LOG.fatal("Throw IOException this message:  Not supported compression format.");
             throw new IOException("Not supported compression format.");
         }
         File extractedArchiveDir = extract(paper);
+        
         return builder.build(extractedArchiveDir);
     }
 
@@ -42,9 +46,11 @@ public abstract class ArchiveScientificPaperBuilder implements ScientificPaperBu
         String fileExtension = FilenameUtils.getExtension(file.getName());
         for(SupportedArchiveExtensions extension : SupportedArchiveExtensions.values()) {
             if(fileExtension.equals(extension.getStringValue())) {
-                return true;
+                
+            	return true;
             }
         }
+        
         return false;
     }
 }

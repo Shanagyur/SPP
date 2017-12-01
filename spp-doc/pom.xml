@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<project 
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>hu.uni.miskolc.iit.spp</groupId>
+		<artifactId>scientific-paper-processor</artifactId>
+		<version>0.0.3-SNAPSHOT</version>
+	</parent>
+	
+	<groupId>hu.uni.miskolc.iit.spp</groupId>
+	<artifactId>spp-doc</artifactId>
+	<version>0.0.3-SNAPSHOT</version>
+	
+	<name>spp-doc</name>
+	<url>http://maven.apache.org</url>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>hu.uni.miskolc.iit.spp</groupId>
+			<artifactId>spp-core</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.documents4j</groupId>
+			<artifactId>documents4j-api</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.documents4j</groupId>
+			<artifactId>documents4j-local</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.documents4j</groupId>
+			<artifactId>documents4j-transformer-msoffice-word</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+		
+		<dependency>
+    		<groupId>org.apache.poi</groupId>
+    		<artifactId>poi</artifactId>
+    		<version>3.10-FINAL</version>
+		</dependency>		
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-scratchpad</artifactId>
+			<version>3.10-FINAL</version>
+		</dependency>
+	</dependencies>
+
+</project>

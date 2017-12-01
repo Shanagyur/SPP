@@ -228,7 +228,7 @@ public class ScientificPaperLatexBuilderTest {
         mockBuilder.extractTitle(dirMoreAuthorsAndKeyword);
         List<Author> actualAuthors = mockBuilder.extractAuthors(dirMoreAuthorsAndKeyword);
 
-        List<Author> expectedAuthors = new ArrayList();
+        List<Author> expectedAuthors = new ArrayList<Author>();
         expectedAuthors.add(new Author("Jean Smith", "jean.s@mail.com", "University of Gondor, Middle-earth"));
         expectedAuthors.add(new Author("Jane Smith", "jane.s@mail.com", "University of Gondor, Middle-earth"));
         expectedAuthors.add(new Author("John Smith", "john.s@mail.com", "University of Mordor, Middle-earth"));

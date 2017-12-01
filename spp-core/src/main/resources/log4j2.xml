@@ -10,24 +10,18 @@
             <PatternLayout
                     pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
         </File>
-        <File name="SPP_CORE_SERVICE_LOGS" fileName="logs/spp-core/serviceAll.log" append="true">
+        
+        <File name="DOC_LOGS" fileName="logs/spp-doc.log" append="true">
             <PatternLayout
+                    pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
+        </File>
+        
+        <File name="DOCX_LOGS" fileName="logs/spp-docx.log" append="true">
+        	<PatternLayout
                     pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
         </File>
 
         <File name="LATEX_LOGS" fileName="logs/spp-latex.log" append="true">
-            <PatternLayout
-                    pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
-        </File>
-        <File name="SP_LATEX_BUILDER_LOGS" fileName="logs/spp-latex/scientificPaperLatexBuilder.log" append="true">
-            <PatternLayout
-                    pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
-        </File>
-        <File name="SPP_LATEX_ARCHIVE_LOGS" fileName="logs/spp-latex/archive/archiveAll.log" append="true">
-            <PatternLayout
-                    pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
-        </File>
-        <File name="SPP_LATEX_COMPILE_LOGS" fileName="logs/spp-latex/compile/compileAll.log" append="true">
             <PatternLayout
                     pattern="%-5p | %d{yyyy-MM-dd HH:mm:ss} | [%t] %C{2} (%F:%L) - %m%n" />
         </File>
@@ -38,26 +32,20 @@
             <AppenderRef ref="ALL_LOGS"/>
             <AppenderRef ref="CORE_LOGS"/>
         </Logger>
-        <Logger name="hu.uni.miskolc.iit.spp.core.service" level="all">
+        
+        <Logger name="hu.uni.miskolc.iit.spp.doc" level="all">
             <AppenderRef ref="ALL_LOGS"/>
-            <AppenderRef ref="CORE_LOGS"/>
-            <AppenderRef ref="SPP_CORE_SERVICE_LOGS"/>
+            <AppenderRef ref="DOC_LOGS"/>
         </Logger>
-
+        
+		<Logger name="hu.uni.miskolc.iit.spp.docx" level="all">
+            <AppenderRef ref="ALL_LOGS"/>
+            <AppenderRef ref="DOCX_LOGS"/>
+        </Logger>
+        
         <Logger name="hu.uni.miskolc.iit.spp.latex" level="all">
             <AppenderRef ref="ALL_LOGS"/>
             <AppenderRef ref="LATEX_LOGS"/>
-            <AppenderRef ref="SP_LATEX_BUILDER_LOGS"/>
-        </Logger>
-        <Logger name="hu.uni.miskolc.iit.spp.latex.archive" level="all">
-            <AppenderRef ref="ALL_LOGS"/>
-            <AppenderRef ref="LATEX_LOGS"/>
-            <AppenderRef ref="SPP_LATEX_ARCHIVE_LOGS"/>
-        </Logger>
-        <Logger name="hu.uni.miskolc.iit.spp.latex.compile" level="all">
-            <AppenderRef ref="ALL_LOGS"/>
-            <AppenderRef ref="LATEX_LOGS"/>
-            <AppenderRef ref="SPP_LATEX_COMPILE_LOGS"/>
         </Logger>
     </Loggers>
 </Configuration>

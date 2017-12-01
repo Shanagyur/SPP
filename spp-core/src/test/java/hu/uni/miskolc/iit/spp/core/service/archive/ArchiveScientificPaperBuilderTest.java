@@ -1,18 +1,10 @@
 package hu.uni.miskolc.iit.spp.core.service.archive;
 
-import hu.uni.miskolc.iit.spp.core.model.exception.ConversionToPDFException;
-import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
 import hu.uni.miskolc.iit.spp.core.service.ScientificPaperBuilder;
-import org.easymock.EasyMock;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
-
-import static org.junit.Assert.*;
 
 public abstract class ArchiveScientificPaperBuilderTest {
 
