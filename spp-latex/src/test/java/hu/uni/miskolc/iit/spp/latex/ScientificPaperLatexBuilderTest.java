@@ -199,7 +199,7 @@ public class ScientificPaperLatexBuilderTest {
         boolean condition_1 = keywords.get(0).toString().contains("keyword1");
         boolean condition_2 = keywords.get(1).toString().contains("keyword2");
         boolean condition_3 = keywords.get(2).toString().contains("keyword3");
-
+        
         assertTrue(conditionSize && condition_1 && condition_2 && condition_3);
     }
 

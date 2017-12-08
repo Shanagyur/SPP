@@ -1,7 +1,21 @@
 package hu.uni.miskolc.iit.spp.latex;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import hu.uni.miskolc.iit.spp.core.model.Author;
 import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableFileExtensions;
@@ -12,10 +26,6 @@ import hu.uni.miskolc.iit.spp.core.model.exception.NoMainDocumentFoundException;
 import hu.uni.miskolc.iit.spp.core.model.exception.SearchedFileNotExistsException;
 import hu.uni.miskolc.iit.spp.core.service.AbstractScientificPaperBuilder;
 import hu.uni.miskolc.iit.spp.latex.compile.Latex2PDFCompiler;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder {
 
@@ -61,9 +71,29 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 
 	@Override
 	protected String extractTitle(File paper) throws IOException {
-		try {
-			File mainTexFile = findTexFile(paper, SupportedFileNames.getStringValues());
+		try {		
+			File mainTexFile = findTexFile(paper, SupportedFileNames.getStringValues());			
 			completeTexFile = patchTexFile(paper, mainTexFile);
+			
+			String title = "";
+			if(!completeTexFile.toString().contains(LatexArgs.TITLE.getArgument())) {
+				LOG.warn("ExtractTitle method return with empty string.");
+				
+				return title;
+			}
+			
+			String[] SBLines = completeTexFile.toString().split(System.lineSeparator());
+			for(String line : SBLines) {
+				if(line.contains(LatexArgs.TITLE.getArgument())) {
+					int beginIndex = line.indexOf(LatexArgs.TITLE.getArgument());
+					int endIndex = line.indexOf("}");
+					String roughTitle = line.substring(beginIndex + 1, endIndex);
+					title = roughTitle;
+					break;
+				}
+			}
+
+			return title;
 
 		} catch(SearchedFileNotExistsException e) {
 			LOG.fatal("Catch SearchedFileNotExistsException and throw IOException this message: " + e.getMessage());
@@ -72,27 +102,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 		} catch(IOException e) {
 			LOG.fatal("Catch IOException this message: " + e.getMessage() + System.lineSeparator() + "And throw IOexception with the same message.");
 			throw new IOException(e.getMessage());
-		}
-
-		String title = "";
-		if(!completeTexFile.toString().contains(LatexArgs.TITLE.getArgument())) {
-			LOG.warn("ExtractTitle method return with empty string.");
-			
-			return title;
-		}
-
-		String[] SBLines = completeTexFile.toString().split(System.lineSeparator());
-		for(String line : SBLines) {
-			if(line.contains(LatexArgs.TITLE.getArgument())) {
-				int beginIndex = line.indexOf(LatexArgs.TITLE.getArgument());
-				int endIndex = line.indexOf("}");
-				String roughTitle = line.substring(beginIndex + 1, endIndex);
-				title = roughTitle;
-				break;
-			}
-		}
-
-		return title;
+		}		
 	}
 
 	@Override
@@ -270,7 +280,7 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 			BufferedReader reader = new BufferedReader(new FileReader(texFile));
 			String line = reader.readLine();
 			while(line != null) {
-				if(line.contains(LatexArgs.INPUT.getArgument())) {
+				if(line.contains(LatexArgs.INPUT.getArgument())) {				
 					builder.append(line).append(System.lineSeparator());
 					File wantedTexFile = findTexFile(directory, extractFileName(line));
 					builder.append(patchTexFile(directory, wantedTexFile));
@@ -278,7 +288,8 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 				builder.append(line).append(System.lineSeparator());
 				line = reader.readLine();
 			}
-
+			reader.close();
+			
 			return builder;
 
 		} catch(IOException e) {
@@ -314,46 +325,48 @@ public class ScientificPaperLatexBuilder extends AbstractScientificPaperBuilder 
 	}
 
 	private File findTexFile(File directory, String name) throws SearchedFileNotExistsException {
-		String[] singletonNames = new String[1];
-		singletonNames[0] = name;
+		String[] singletonName = new String[1];
+		singletonName[0] = name;
 
-		return findTexFile(directory, singletonNames);
+		return findTexFile(directory, singletonName);
 	}
-
+	
 	private File findTexFile(File directory, String[] names) throws SearchedFileNotExistsException {
-		File[] dirFiles = directory.listFiles();
-		if(dirFiles != null && dirFiles.length > 0) {
-			for(File file : dirFiles) {
-				if(file.isDirectory()) {
-					
-					return findTexFile(file, names);
+		try {		
+			String extension = "." + SupportedCompileableFileExtensions.TEX.getStringValue();
+			Stream<Path> pathStream = Files.find(directory.toPath(), Integer.MAX_VALUE, 
+					(path, attrs) -> attrs.isRegularFile() && path.toString().endsWith(extension), 
+					FileVisitOption.FOLLOW_LINKS);
+	
+			File wantedFile = new File("");			
+			boolean founded = false;
+			List<Object> pathList = Arrays.asList(pathStream.toArray());
+			for(Object object : pathList) {				
+				if(founded) {
+					break;
 				}
-				if(isSearchedName(file, names) && isTexFile(file)) {
-					
-					return file;
+				Path path = (Path) object;
+				for(String name : names) {
+					if(!path.toString().endsWith(name + extension)) {
+						continue;
+					}
+					founded = true;
+					wantedFile = path.toFile();
+					break;
 				}
 			}
-		}
-		LOG.fatal("Throw SearchedFileNotExistsException this message: Could not find .tex file with this name(s).");
-		throw new SearchedFileNotExistsException("Could not find .tex file with this name(s).");
-	}
+			pathStream.close();
 
-	private boolean isSearchedName(File file, String[] names) {
-		String fileName = FilenameUtils.getBaseName(file.getName()).toLowerCase();
-		for(String name : names) {
-			if(fileName.equals(name)) {
-				
-				return true;
+			if(!wantedFile.exists()) {
+				throw new SearchedFileNotExistsException("Could not find .tex file with this name(s): " + Arrays.toString(names));
 			}
+			
+			return wantedFile;
+		
+		} catch (IOException e) {
+			LOG.fatal("Catch IOException and throw SearchedFileNotExistsException with same message: " + e.getMessage());
+			throw new SearchedFileNotExistsException(e.getMessage());
 		}
-		
-		return false;
-	}
-
-	private boolean isTexFile(File file) {
-		String fileExtension = FilenameUtils.getExtension(file.getName());
-		
-		return fileExtension.equals(SupportedCompileableFileExtensions.TEX.getStringValue());
 	}
 
 	private File initDestinationDir(File rootFile) throws IOException {
