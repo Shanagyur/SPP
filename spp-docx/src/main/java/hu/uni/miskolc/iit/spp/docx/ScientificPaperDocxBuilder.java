@@ -76,7 +76,7 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 	}
 	
 	private File initDestinationDir(File rootFile) throws IOException {
-		File directory = new File(rootFile.getParentFile().getParentFile().getAbsolutePath() + FILE_SEPARATOR + DEST_DIR_NAME);
+		File directory = new File(rootFile.getParentFile().getAbsolutePath() + FILE_SEPARATOR + DEST_DIR_NAME);
 		if(!directory.exists()) {
 			if(!directory.mkdir()) {
 				LOG.fatal("Throw IOException this message: Could not create directory: " + directory.getAbsolutePath());
@@ -204,7 +204,7 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 		List<Author> authors = getAuthors(docxParagraphs);
 			
 		if(authors.isEmpty()) {
-			LOG.warn("ExtractTitle method return with empty list.");
+			LOG.warn("ExtractAuthors method return with empty list.");
 		}
 		
 		return authors;
@@ -248,7 +248,9 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 			String email = emailAndAffil[0];
 			String affiliation = emailAndAffil[1] + "," + emailAndAffil[2];
 			
-			authors.add(new Author(name, email, affiliation));
+			authors.add(new Author(removeNeedlessSpaces(name), 
+					removeNeedlessSpaces(email), 
+					removeNeedlessSpaces(affiliation)));
 		}
 		
 		return authors;
@@ -262,7 +264,9 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 		String email = emailAndAffil[0];
 		String affiliation = emailAndAffil[1] + "," + emailAndAffil[2];
 		
-		return new Author(name, email, affiliation);
+		return new Author(removeNeedlessSpaces(name), 
+				removeNeedlessSpaces(email), 
+				removeNeedlessSpaces(affiliation));
 	}
 
 	private List<String> getAuthorData(XWPFParagraph authorParaghraph) throws IOException {
@@ -286,6 +290,7 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 			while((line = reader.readLine()) != null) {
 				dataFromFile.add(line);
 			}
+			reader.close();
 			
 			return dataFromFile;
 		
@@ -327,5 +332,40 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 		int lastAtPosition = authorParaghraphText.lastIndexOf("@");
 		
 		return firstAtPosition != lastAtPosition;
+	}
+	
+	private String removeNeedlessSpaces(String string) {
+		if(containsNeedlessSpaces(string)) {
+			
+			return removeNeedlessSpaces(removeSpaces(string));
+		}
+
+		return string;
+	}
+	
+	private boolean containsNeedlessSpaces(String string) {
+		
+		return containsNeedlesStartSpace(string) || containsNeedlessEndSpace(string);
+	}
+	
+	private boolean containsNeedlesStartSpace(String string) {
+		
+		return string.startsWith(" ");
+	}
+
+	private boolean containsNeedlessEndSpace(String string) {
+	
+		return string.endsWith(" ");
+	}
+	
+	private String removeSpaces(String string) {
+		if(containsNeedlesStartSpace(string)) {
+			string = string.replaceFirst(" ", "");
+		}
+		if(containsNeedlessEndSpace(string)) {
+			string = string.substring(0, string.length() - 1);
+		}
+		
+		return string;
 	}
 }
