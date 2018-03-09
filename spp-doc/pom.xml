@@ -40,13 +40,19 @@
 			<artifactId>documents4j-local</artifactId>
 			<version>1.0.3</version>
 		</dependency>
-	
+ 	
 		<dependency>
 			<groupId>com.documents4j</groupId>
 			<artifactId>documents4j-transformer-msoffice-word</artifactId>
 			<version>1.0.3</version>
+ 		</dependency>
+		
+		<dependency>
+    		<groupId>org.slf4j</groupId>
+    		<artifactId>slf4j-nop</artifactId>
+    		<version>1.7.25</version>
 		</dependency>
-	
+ 	
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>

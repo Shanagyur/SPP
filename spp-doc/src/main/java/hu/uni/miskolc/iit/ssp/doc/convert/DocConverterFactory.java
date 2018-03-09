@@ -6,17 +6,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.util.StringUtil;
 
 import com.documents4j.api.IConverter;
 import com.documents4j.job.LocalConverter;
 
 import hu.uni.miskolc.iit.spp.core.model.SupportedCompileableFileExtensions;
 import hu.uni.miskolc.iit.spp.core.model.SupportedOperationSystems;
+import hu.uni.miskolc.iit.spp.core.model.UsedDirectoryNames;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedApplicationException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedFileExtensionException;
 import hu.uni.miskolc.iit.spp.core.model.exception.NotSupportedOperationSystemException;
@@ -47,8 +46,14 @@ public class DocConverterFactory {
 			throw new NotSupportedApplicationException("Could not create compiler, because the current MSOffice or its version is not supported.");
 		}
 
-		File baseFolder = new File("");
-
+		File baseFolder = new File(docFile.getParentFile().getAbsolutePath() + FILE_SEPARATOR + UsedDirectoryNames.DIR_FOR_TEMP_FILES.getStringValue());
+		if(!baseFolder.exists()) {
+			if(!baseFolder.mkdir()) {
+				LOG.fatal("Throw IOException this message: Could not create directory: " + baseFolder.getAbsolutePath());
+				throw new IOException("Could not create directory: " + baseFolder.getAbsolutePath());
+			}
+		}
+		
 		IConverter converter = LocalConverter
 				.builder()
 				.baseFolder(baseFolder)
@@ -56,7 +61,7 @@ public class DocConverterFactory {
 				.processTimeout(15, TimeUnit.SECONDS)
 				.build();
 
-		return new Doc2PDFConverter(converter);
+		return new Doc2PDFConverter(converter, baseFolder);
 	}
 
 	private boolean isSupportedOS() {
