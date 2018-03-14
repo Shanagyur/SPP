@@ -2,7 +2,6 @@ package hu.uni.miskolc.iit.ssp.doc.convert;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Future;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,21 +19,28 @@ public class Doc2PDFConverter {
 	private static Logger LOG = LogManager.getLogger(Doc2PDFConverter.class);
 	
 	private IConverter converter;
+	private File baseFolder;
 
-	protected Doc2PDFConverter(IConverter converter) {
+	protected Doc2PDFConverter(IConverter converter, File baseFolder) {
 		this.converter = converter;
+		this.baseFolder = baseFolder;
 	}
 	
 	public File generatePDF(File docFile, File destinatioDir) throws IOException {
 		
 		File pdfFile = createBlankPdfFile(docFile, destinatioDir);
 		
-		Future<Boolean> conversion = converter
+		boolean conversion = converter
 				.convert(docFile).as(DocumentType.MS_WORD)
 				.to(pdfFile).as(DocumentType.PDF)
 				.prioritizeWith(1000)
-				.schedule();
+				.execute();
 		
+		if(conversion) {
+			converter.shutDown();
+			baseFolder.deleteOnExit();
+		}
+
 		return pdfFile;
 	}
 
