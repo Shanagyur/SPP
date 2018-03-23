@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -34,27 +35,28 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 	private static final String DEST_DIR_NAME = UsedDirectoryNames.DIR_FOR_PDF_FILE.getStringValue();
 	private static final String SUB_DIR_NAME = "version_";
-	
+
 	private static Logger LOG = LogManager.getLogger(ScientificPaperDocxBuilder.class);
-	
+
 	private Docx2PDFConverter converter;
 	private List<XWPFParagraph> docxParagraphs;
-	
+
 	public ScientificPaperDocxBuilder(Docx2PDFConverter converter) {
 		this.converter = converter;
 	}
-	
+
 	@Override
 	protected void checkFileExtension(File paper) throws NoMainDocumentFoundException {
-		if(!isDocxFile(paper)) {
-			LOG.fatal("Throw NoMainDocumentFoundException this message: The file's extension is not .docx: " + paper.getName());
+		if (!isDocxFile(paper)) {
+			LOG.fatal("Throw NoMainDocumentFoundException this message: The file's extension is not .docx: "
+					+ paper.getName());
 			throw new NoMainDocumentFoundException("The file's extension is not .docx: " + paper.getName());
 		}
 	}
 
 	private boolean isDocxFile(File file) {
 		String fileExtension = FilenameUtils.getExtension(file.getName());
-		
+
 		return fileExtension.equals(SupportedCompileableFileExtensions.DOCX.getStringValue());
 	}
 
@@ -63,32 +65,34 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 		try {
 			File destinationDir = initDestinationDir(paper);
 			File pdfFile = converter.generatePDF(destinationDir);
-			
+
 			return pdfFile;
-			
+
 		} catch (IOException e) {
-			LOG.fatal("Catch IOException and throw ConversionToPDFException with the same message: " + System.lineSeparator() + e.getMessage());
+			LOG.fatal("Catch IOException and throw ConversionToPDFException with the same message: "
+					+ System.lineSeparator() + e.getMessage());
 			throw new ConversionToPDFException(e.getMessage());
 		} catch (SearchedFileNotExistsException e) {
-			LOG.fatal("Catch SearchedFileNotExistsException and throw ConversionToPDFException with the same message: " + System.lineSeparator() + e.getMessage());
+			LOG.fatal("Catch SearchedFileNotExistsException and throw ConversionToPDFException with the same message: "
+					+ System.lineSeparator() + e.getMessage());
 			throw new ConversionToPDFException(e.getMessage());
 		}
 	}
-	
+
 	private File initDestinationDir(File rootFile) throws IOException {
 		File directory = new File(rootFile.getParentFile().getAbsolutePath() + FILE_SEPARATOR + DEST_DIR_NAME);
-		if(!directory.exists()) {
-			if(!directory.mkdir()) {
+		if (!directory.exists()) {
+			if (!directory.mkdir()) {
 				LOG.fatal("Throw IOException this message: Could not create directory: " + directory.getAbsolutePath());
 				throw new IOException("Could not create directory: " + directory.getAbsolutePath());
 			}
 		}
 		int versionNo = 0;
-		while(new File(directory.getAbsolutePath() + FILE_SEPARATOR + SUB_DIR_NAME + versionNo).exists() == true) {
+		while (new File(directory.getAbsolutePath() + FILE_SEPARATOR + SUB_DIR_NAME + versionNo).exists() == true) {
 			versionNo++;
 		}
 		File destDir = new File(directory.getAbsolutePath() + FILE_SEPARATOR + SUB_DIR_NAME + versionNo);
-		if(!destDir.mkdir()) {
+		if (!destDir.mkdir()) {
 			LOG.fatal("Throw IOException this message: Could not create directory: " + destDir.getAbsolutePath());
 			throw new IOException("Could not create directory: " + destDir.getAbsolutePath());
 		}
@@ -100,140 +104,140 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 	protected String extractTitle(File paper) throws IOException {
 		docxParagraphs = patchDocxParagraphs(paper);
 		String title = getTitle(docxParagraphs);
-		
-		if(title.isEmpty()) {
+
+		if (title.isEmpty()) {
 			LOG.warn("ExtractTitle method return with empty string.");
 		}
-		
+
 		return title;
 	}
-	
+
 	private String getTitle(List<XWPFParagraph> paragraphs) {
-		for(XWPFParagraph paragraph : paragraphs) {
-			if(!paragraph.getAlignment().equals(ParagraphAlignment.CENTER)) {
+		for (XWPFParagraph paragraph : paragraphs) {
+			if (!paragraph.getAlignment().equals(ParagraphAlignment.CENTER)) {
 				continue;
 			}
-			for(XWPFRun run : paragraph.getRuns()) {
-				if(run.isBold()) {
-					
+			for (XWPFRun run : paragraph.getRuns()) {
+				if (run.isBold()) {
+
 					return paragraph.getText();
 				}
 			}
 		}
-		
+
 		return "";
 	}
-	
+
 	private List<XWPFParagraph> patchDocxParagraphs(File docxFile) throws IOException {
 		XWPFDocument document = new XWPFDocument(new FileInputStream(docxFile));
 		List<XWPFParagraph> listOfParagraphs = document.getParagraphs();
-		
+
 		return listOfParagraphs;
 	}
 
 	@Override
 	protected String extractAbstract(File paper) {
 		String resume = getAbstract(docxParagraphs);
-		
-		if(resume.isEmpty()) {
+
+		if (resume.isEmpty()) {
 			LOG.warn("ExtractAbstract method return with empty string.");
 		}
-		
+
 		return resume;
 	}
 
 	private String getAbstract(List<XWPFParagraph> paragraphs) {
-		for(XWPFParagraph paragraph : paragraphs) {
-			if(!paragraph.getText().toLowerCase().contains("abstract")) {
+		for (XWPFParagraph paragraph : paragraphs) {
+			if (!paragraph.getText().toLowerCase().contains("abstract")) {
 				continue;
 			}
-			if(paragraph.getText().equals(getTitle(paragraphs))) {
+			if (paragraph.getText().equals(getTitle(paragraphs))) {
 				continue;
 			}
-			for(XWPFRun run : paragraph.getRuns()) {
-				if(run.isBold()) {
-					
+			for (XWPFRun run : paragraph.getRuns()) {
+				if (run.isBold()) {
+
 					return paragraph.getText();
 				}
 			}
 		}
-		
+
 		return "";
 	}
-	
 
 	@Override
 	protected List<String> extractKeywords(File paper) {
 		List<String> keywords = getKeywords(docxParagraphs);
-		
-		if(keywords.isEmpty()) {
+
+		if (keywords.isEmpty()) {
 			LOG.warn("ExtractKeywords method return with empty list.");
 		}
-		
+
 		return keywords;
 	}
 
 	private List<String> getKeywords(List<XWPFParagraph> paragraphs) {
-		List<String> keywords = new ArrayList<String>();
-		
-		for(XWPFParagraph paragraph : paragraphs) {
-			if(paragraph.getText().toLowerCase().contains("keywords") ||
-				paragraph.getText().toLowerCase().contains("index terms")) {
+		List<String> keywords = new ArrayList<>();
+
+		for (XWPFParagraph paragraph : paragraphs) {
+			if (paragraph.getText().toLowerCase().contains("keywords")
+					|| paragraph.getText().toLowerCase().contains("index terms")) {
 				keywords = Arrays.asList(paragraph.getText().split(","));
-				
+
 				break;
 			}
 		}
-		
-		for(String word : keywords) {
-			if(word.contains("keywords") || word.contains("index terms")) {
-				word.replace("keywords", "");
-				word.replace("index terms", "");
-				word = word.substring(2);
-				
+
+		for (String word : keywords) {
+			if (word.contains("keywords") || word.contains("index terms")) {
+				int index = keywords.indexOf(word);
+				word = word.replace("keywords:", "");
+				word = word.replace("index terms:", "");
+				word = word.substring(1);
+				keywords.set(index, word);
+
 				break;
 			}
 		}
-		
+
 		return keywords;
 	}
-	
 
 	@Override
 	protected List<Author> extractAuthors(File paper) throws IOException {
 		List<Author> authors = getAuthors(docxParagraphs);
-			
-		if(authors.isEmpty()) {
+
+		if (authors.isEmpty()) {
 			LOG.warn("ExtractAuthors method return with empty list.");
 		}
-		
+
 		return authors;
 	}
 
 	private List<Author> getAuthors(List<XWPFParagraph> paragraphs) throws IOException {
 		XWPFParagraph authorParaghraph = findAuthorParagraph(paragraphs);
-		
+
 		List<Author> authorsList = new ArrayList<Author>();
-		if(authorParaghraph != null) {
-			if(moreAuthor(authorParaghraph)) {
+		if (authorParaghraph != null) {
+			if (moreAuthor(authorParaghraph)) {
 				authorsList = getAllAuthors(authorParaghraph);
-			
+
 			} else {
 				authorsList.add(getSingleAuthor(authorParaghraph));
 			}
 		}
-			
+
 		return authorsList;
 	}
 
 	private XWPFParagraph findAuthorParagraph(List<XWPFParagraph> paragraphs) {
-		for(XWPFParagraph paragraph : paragraphs) {
-			if(paragraph.getText().contains("@")) {
-				
+		for (XWPFParagraph paragraph : paragraphs) {
+			if (paragraph.getText().contains("@")) {
+
 				return paragraph;
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -241,32 +245,29 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 		List<String> authorsData = getAuthorData(authorParaghraph);
 		String[] names = authorsData.get(0).split(",");
 		List<Author> authors = new ArrayList<Author>();
-		for(int i = 0; i < names.length; i++) {
+		for (int i = 0; i < names.length; i++) {
 			String[] emailAndAffil = authorsData.get(i + 1).split(",");
-			
+
 			String name = names[i];
 			String email = emailAndAffil[0];
 			String affiliation = emailAndAffil[1] + "," + emailAndAffil[2];
-			
-			authors.add(new Author(removeNeedlessSpaces(name), 
-					removeNeedlessSpaces(email), 
+
+			authors.add(new Author(removeNeedlessSpaces(name), removeNeedlessSpaces(email),
 					removeNeedlessSpaces(affiliation)));
 		}
-		
+
 		return authors;
 	}
 
 	private Author getSingleAuthor(XWPFParagraph authorParaghraph) throws IOException {
 		List<String> authorsData = getAuthorData(authorParaghraph);
 		String[] emailAndAffil = authorsData.get(1).split(",");
-		
+
 		String name = authorsData.get(0);
 		String email = emailAndAffil[0];
 		String affiliation = emailAndAffil[1] + "," + emailAndAffil[2];
-		
-		return new Author(removeNeedlessSpaces(name), 
-				removeNeedlessSpaces(email), 
-				removeNeedlessSpaces(affiliation));
+
+		return new Author(removeNeedlessSpaces(name), removeNeedlessSpaces(email), removeNeedlessSpaces(affiliation));
 	}
 
 	private List<String> getAuthorData(XWPFParagraph authorParaghraph) throws IOException {
@@ -274,7 +275,7 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 		writeToFile(tempFile, authorParaghraph.getText());
 		List<String> authorData = readFromFile(tempFile);
 		deleteTempFile(tempFile);
-		
+
 		return authorData;
 	}
 
@@ -287,18 +288,20 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 			BufferedReader reader = new BufferedReader(new FileReader(tempFile));
 			List<String> dataFromFile = new ArrayList<String>();
 			String line;
-			while((line = reader.readLine()) != null) {
+			while ((line = reader.readLine()) != null) {
 				dataFromFile.add(line);
 			}
 			reader.close();
-			
+
 			return dataFromFile;
-		
-		} catch(FileNotFoundException e) {
-			LOG.fatal("Catch FileNotFoundException and throw IOException with the same message: " + System.lineSeparator() + e.getMessage());
+
+		} catch (FileNotFoundException e) {
+			LOG.fatal("Catch FileNotFoundException and throw IOException with the same message: "
+					+ System.lineSeparator() + e.getMessage());
 			throw new IOException(e.getMessage());
-		} catch(IOException e) {
-			LOG.fatal("Catch IOException and throw forward with this message: " + System.lineSeparator() + e.getMessage());
+		} catch (IOException e) {
+			LOG.fatal("Catch IOException and throw forward with this message: " + System.lineSeparator()
+					+ e.getMessage());
 			throw new IOException(e.getMessage());
 		}
 	}
@@ -309,7 +312,8 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 			writer.write(paragraphText);
 			writer.close();
 		} catch (IOException e) {
-			LOG.fatal("Catch IOException and throw forward with this message: " + System.lineSeparator() + e.getMessage());
+			LOG.fatal("Catch IOException and throw forward with this message: " + System.lineSeparator()
+					+ e.getMessage());
 			throw new IOException(e.getMessage());
 		}
 	}
@@ -318,10 +322,11 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 		try {
 			File tempFile = new File("temp.txt");
 			tempFile.createNewFile();
-		
+
 			return tempFile;
 		} catch (IOException e) {
-			LOG.fatal("Catch IOException and throw forward with this message: " + System.lineSeparator() + e.getMessage());
+			LOG.fatal("Catch IOException and throw forward with this message: " + System.lineSeparator()
+					+ e.getMessage());
 			throw new IOException(e.getMessage());
 		}
 	}
@@ -330,42 +335,42 @@ public class ScientificPaperDocxBuilder extends AbstractScientificPaperBuilder {
 		String authorParaghraphText = authorParaghraph.getText();
 		int firstAtPosition = authorParaghraphText.indexOf("@");
 		int lastAtPosition = authorParaghraphText.lastIndexOf("@");
-		
+
 		return firstAtPosition != lastAtPosition;
 	}
-	
+
 	private String removeNeedlessSpaces(String string) {
-		if(containsNeedlessSpaces(string)) {
-			
+		if (containsNeedlessSpaces(string)) {
+
 			return removeNeedlessSpaces(removeSpaces(string));
 		}
 
 		return string;
 	}
-	
+
 	private boolean containsNeedlessSpaces(String string) {
-		
+
 		return containsNeedlesStartSpace(string) || containsNeedlessEndSpace(string);
 	}
-	
+
 	private boolean containsNeedlesStartSpace(String string) {
-		
+
 		return string.startsWith(" ");
 	}
 
 	private boolean containsNeedlessEndSpace(String string) {
-	
+
 		return string.endsWith(" ");
 	}
-	
+
 	private String removeSpaces(String string) {
-		if(containsNeedlesStartSpace(string)) {
+		if (containsNeedlesStartSpace(string)) {
 			string = string.replaceFirst(" ", "");
 		}
-		if(containsNeedlessEndSpace(string)) {
+		if (containsNeedlessEndSpace(string)) {
 			string = string.substring(0, string.length() - 1);
 		}
-		
+
 		return string;
 	}
 }
