@@ -62,7 +62,7 @@ public class ScientificPaperDocBuilder extends AbstractScientificPaperBuilder {
 
 	private boolean isDocFile(File paper) {
 		String extension = FilenameUtils.getExtension(paper.getName());
-		
+
 		return extension.equals(SupportedCompileableFileExtensions.DOC.getStringValue());
 	}
 
@@ -81,7 +81,7 @@ public class ScientificPaperDocBuilder extends AbstractScientificPaperBuilder {
 	}
 
 	private File initDestinationDir(File rootFile) throws IOException {
-		File directory = new File(rootFile.getParentFile().getParentFile().getAbsolutePath() + FILE_SEPARATOR + DEST_DIR_NAME);
+		File directory = new File(rootFile.getParentFile().getAbsolutePath() + FILE_SEPARATOR + DEST_DIR_NAME);
 		if(!directory.exists()) {
 			if(!directory.mkdir()) {
 				LOG.fatal("Throw IOException this message: Could not create directory: " + directory.getAbsolutePath());
@@ -244,9 +244,11 @@ public class ScientificPaperDocBuilder extends AbstractScientificPaperBuilder {
 			if(!containsKeywords(keyword)) {
 				continue;
 			}
-			keyword.replace("keywords", "");
-			keyword.replace("index terms", "");
-			keyword = keyword.substring(2);
+			int index = keywords.indexOf(keyword);
+			keyword = keyword.replace("keywords:", "");
+			keyword = keyword.replace("index terms:", "");
+			keyword = keyword.substring(1);
+			keywords.set(index, keyword);
 		
 			break;
 		}
@@ -297,8 +299,13 @@ public class ScientificPaperDocBuilder extends AbstractScientificPaperBuilder {
 		}
 		
 		List<Author> authors = new ArrayList<Author>();
-		for(int i = 0; i < names.length; i++) {
-			authors.add(new Author(names[i], emails[i], affils[i]));
+		if(names[0].length() > 0) {
+			for(int i = 0; i < names.length; i++) {
+				authors.add(new Author(
+						removeNeedlessSpaces(names[i]), 
+						removeNeedlessSpaces(emails[i]), 
+						removeNeedlessSpaces(affils[i])));
+			}
 		}
 		
 		return authors;
@@ -306,21 +313,24 @@ public class ScientificPaperDocBuilder extends AbstractScientificPaperBuilder {
 
 	private String[] cleanTextArray(String authorParagraphText) {
 		authorParagraphText = replaceManualLineBreak(authorParagraphText, "");
-		authorParagraphText.replaceAll("HYPERLINK", System.lineSeparator());
-		String[] textArray = authorParagraphText.split(System.lineSeparator());
-		for(String text : textArray) {
+		authorParagraphText = authorParagraphText.replaceAll("HYPERLINK", System.lineSeparator());
+		
+		List<String> textList = Arrays.asList(authorParagraphText.split(System.lineSeparator()));
+		for(String text : textList) {
 			if(!text.contains("@")) {
 				continue;
 			}
 			if(!text.contains("\"mailto:")) {
 				continue;
 			}
+			int index = textList.indexOf(text);
 			int beginIndex = text.indexOf("\"mailto:");
 			int lastIndex = text.indexOf("\"", beginIndex + 1);
 			text = text.substring(lastIndex + 1, text.length());
+			textList.set(index, text);
 		}
 		
-		return textArray;
+		return textList.toArray(new String[textList.size()]);
 	}
 
 	private String getAuthorParagraphText(Range range) {
@@ -332,8 +342,44 @@ public class ScientificPaperDocBuilder extends AbstractScientificPaperBuilder {
 				continue;
 			}
 			authorParagraphText = paragraph.text();
+			break;
 		}
 		
 		return authorParagraphText;
+	}
+	
+	private String removeNeedlessSpaces(String string) {
+		if (containsNeedlessSpaces(string)) {
+
+			return removeNeedlessSpaces(removeSpaces(string));
+		}
+
+		return string;
+	}
+	
+	private boolean containsNeedlessSpaces(String string) {
+
+		return containsNeedlesStartSpace(string) || containsNeedlessEndSpace(string);
+	}
+	
+	private boolean containsNeedlesStartSpace(String string) {
+
+		return string.startsWith(" ");
+	}
+
+	private boolean containsNeedlessEndSpace(String string) {
+
+		return string.endsWith(" ");
+	}
+	
+	private String removeSpaces(String string) {
+		if (containsNeedlesStartSpace(string)) {
+			string = string.replaceFirst(" ", "");
+		}
+		if (containsNeedlessEndSpace(string)) {
+			string = string.substring(0, string.length() - 1);
+		}
+
+		return string;
 	}
 }
