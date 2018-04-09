@@ -79,25 +79,12 @@
 			</plugin>
 		</plugins>
 	</build>
-<!-- 	
-	<distributionManagement>
-		<repository>
-			<id>releases</id>
-			<uniqueVersion>false</uniqueVersion>
-			<url>http://104.154.30.212:8081/repository/manuscript-release/</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<uniqueVersion>false</uniqueVersion>
-			<url>http://104.154.30.212:8081/repository/manuscript-snapshot/</url>
-		</snapshotRepository>
-	</distributionManagement>
- -->
+	
 	<modules>
-		<module>spp-latex</module>
 		<module>spp-core</module>
 		<module>spp-docx</module>
 		<module>spp-doc</module>
+		<module>spp-latex</module>
 	</modules>
 
 </project>
