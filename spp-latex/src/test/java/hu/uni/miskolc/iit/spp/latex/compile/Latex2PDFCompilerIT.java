@@ -24,7 +24,7 @@ public abstract class Latex2PDFCompilerIT {
     public static void beforeClass() {
         try {
             LatexCompilerFactory factory = new LatexCompilerFactory(System.getProperty("os.name"));
-            Latex2PDFCompiler compiler = factory.createLatexPDFCompiler();
+            factory.createLatexPDFCompiler();
 
         } catch(NotSupportedOperationSystemException e) {
             assumeNoException("Ignore test, because can't run this operation system.", e);

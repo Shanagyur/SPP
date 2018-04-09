@@ -36,7 +36,7 @@ public class ScientificPaperLatexBuilderIT {
     public static void beforeClass() {
         try {
             LatexCompilerFactory factory = new LatexCompilerFactory(System.getProperty("os.name"));
-            Latex2PDFCompiler compiler = factory.createLatexPDFCompiler();
+            factory.createLatexPDFCompiler();
             Runtime.getRuntime().exec("pdflatex -version");
 
         } catch(NotSupportedOperationSystemException e) {
