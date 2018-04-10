@@ -37,12 +37,12 @@ public class DocConverterFactoryTest {
 	}
 	
 	@Test
-	public void createDocPDFConverter_Windows() throws NotSupportedOperationSystemException, NotSupportedFileExtensionException, IOException {
+	public void createDocPDFConverter_Windows() throws NotSupportedOperationSystemException, NotSupportedFileExtensionException {
 		try {
 			factory = new DocConverterFactory("WINdows15_for_Students");
 			factory.createDocPDFConverter(goodFile);
 		
-		} catch(NotSupportedApplicationException e) {
+		} catch(NotSupportedApplicationException | IOException e) {
 			assumeNoException("Ignore test, because can't run this machine.", e);
 		}
 	}
