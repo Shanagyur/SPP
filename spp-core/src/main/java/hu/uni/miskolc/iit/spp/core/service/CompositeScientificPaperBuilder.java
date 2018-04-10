@@ -23,22 +23,32 @@ public class CompositeScientificPaperBuilder implements ScientificPaperBuilder {
 	}
 
 	@Override
-	public ScientificPaper build(String sourceFilePath) throws NoMainDocumentFoundException, ConversionToPDFException, IOException, UseableBuilderNotExistingException {
+	public ScientificPaper build(String sourceFilePath) throws ConversionToPDFException, IOException, UseableBuilderNotExistingException {
 		for(ScientificPaperBuilder builder : builders) {
-			ScientificPaper paper = builder.build(sourceFilePath);
+			try {
+				ScientificPaper paper = builder.build(sourceFilePath);
+				
+				return paper;
 			
-			return paper;
+			} catch (NoMainDocumentFoundException e) {
+				LOG.info(builder.getClass() + " could not build it: " + sourceFilePath);
+			}
 		}
 		LOG.fatal("Throw UseableBuilderNotExistingException without message.");
 		throw new UseableBuilderNotExistingException();
 	}
 
 	@Override
-	public ScientificPaper build(File paper) throws NoMainDocumentFoundException, ConversionToPDFException, IOException, UseableBuilderNotExistingException {
+	public ScientificPaper build(File paper) throws ConversionToPDFException, IOException, UseableBuilderNotExistingException {
 		for(ScientificPaperBuilder builder : builders) {
-			ScientificPaper result = builder.build(paper);
+			try {
+				ScientificPaper result = builder.build(paper);
 			
-			return result;
+				return result;
+				
+			} catch (NoMainDocumentFoundException e) {
+				LOG.info(builder.getClass() + " could not build it: " + paper.getName());
+			}
 		}
 		LOG.fatal("Throw UseableBuilderNotExistingException without message.");
 		throw new UseableBuilderNotExistingException();
