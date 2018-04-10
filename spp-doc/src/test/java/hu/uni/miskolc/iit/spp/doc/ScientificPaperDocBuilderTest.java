@@ -149,7 +149,7 @@ public class ScientificPaperDocBuilderTest {
 	public void extractAbstract() throws NoMainDocumentFoundException, IOException {
 		initFields(goodFile);
 		String actual = mockBuilder.extractAbstract(goodFile);
-		String expected = "Abstract\r\n" + "Abstract text lorem ipsum.\r\n";
+		String expected = "Abstract" + System.getProperty("line.separator") + "Abstract text lorem ipsum." + System.getProperty("line.separator");
 	
 		assertTrue(actual.equals(expected));
 	}
